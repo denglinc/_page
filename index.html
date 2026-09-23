@@ -424,7 +424,7 @@ html,body{margin:0;padding:0}
 
   \[ \frac pq+\frac rs=\frac{ps+qr}{qs},\qquad \frac pq\cdot\frac rs=\frac{pr}{qs},\qquad \Big(\frac pq\Big)^{-1}=\frac qp\quad(p\ne0), \]
 
-  <p>结果都还是有理数，再加上 \(0,1\in\mathbb{Q}\)、\(-\tfrac pq=\tfrac{-p}{q}\)，属于型公理就验完了。P5 是把这套验证从 \(\mathbb{Q}\) 搬到 \(a+b\sqrt2\) 上，官方解答第一句也是先把等式型公理一次打发掉。</p>
+  <p>结果都还是有理数，再加上 \(0,1\in\mathbb{Q}\)、\(-\tfrac pq=\tfrac{-p}{q}\)，属于型公理就验完了。P5 是把这套验证从 \(\mathbb{Q}\) 搬到 \(a+b\sqrt2\) 上，官方解答第一句也是先把等式型公理一次打发掉。P5 开头有完整的公理清单，逐行标了要不要证。</p>
 
   <p><span class="runin">规则 11：求倒数用“共轭”把分母有理化，然后回头确认分母不为零.</span> 共轭即 <span class="en">conjugate</span>，分母有理化即 <span class="en">rationalize the denominator</span>。复数是熟悉的例子：</p>
 
@@ -750,6 +750,26 @@ html,body{margin:0;padding:0}
 <section class="problem" id="p5">
   <h2 class="prob"><span class="lbl">Problem 5 (\(\mathbb{F}=\{a+b\sqrt2:a,b\in\mathbb{Q}\}\) is a field).</span> Let \(\mathbb{F}=\big\{\,a+b\sqrt2:\ a,b\in\mathbb{Q}\,\big\}\) with the usual addition and multiplication of real numbers. Prove that \(\mathbb{F}\) is a field. (Since \(\mathbb{F}\subset\mathbb{R}\) and \(\mathbb{R}\) is a field, the commutative, associative, and distributive laws hold automatically; focus on showing that \(\mathbb{F}\) is closed under the two operations and contains the additive and multiplicative identities and inverses.)</h2>
 
+  <p><span class="runin">先把域的公理列全.</span> 域（<span class="en">field</span>）的公理见讲义 Definition 5，编号共 7 条，其中第 1 条把加法封闭和乘法封闭写在一起；拆开数，就是下表的 8 行。第三列标出本题要不要证：</p>
+
+  <div class="tw">
+    <table class="wrap">
+      <thead><tr><th>公理（讲义编号）</th><th>内容（对所有 \(\alpha,\beta,\gamma\in\mathbb{F}\)）</th><th>本题</th><th>理由，以及答案里哪一条在证它</th></tr></thead>
+      <tbody>
+        <tr><td>1 加法封闭（<span class="en">closure</span>）</td><td>\(\alpha+\beta\in\mathbb{F}\)</td><td><strong>要证</strong></td><td>和一定是实数，但不一定还是 \(a+b\sqrt2\) 的样子。答案“加法封闭与加法逆元”一条</td></tr>
+        <tr><td>1 乘法封闭（<span class="en">closure</span>）</td><td>\(\alpha\beta\in\mathbb{F}\)</td><td><strong>要证</strong></td><td>同上。答案“乘法封闭”一条</td></tr>
+        <tr><td>2 交换律（<span class="en">commutativity</span>）</td><td>\(\alpha+\beta=\beta+\alpha\)，\(\alpha\beta=\beta\alpha\)</td><td>不用证</td><td>对所有实数成立的等式，在子集 \(\mathbb{F}\) 上自动成立（题面：<span class="en">hold automatically</span>）</td></tr>
+        <tr><td>3 结合律（<span class="en">associativity</span>）</td><td>\((\alpha+\beta)+\gamma=\alpha+(\beta+\gamma)\)，\((\alpha\beta)\gamma=\alpha(\beta\gamma)\)</td><td>不用证</td><td>同上</td></tr>
+        <tr><td>4 分配律（<span class="en">distributivity</span>）</td><td>\(\alpha(\beta+\gamma)=\alpha\beta+\alpha\gamma\)</td><td>不用证</td><td>同上</td></tr>
+        <tr><td>5 单位元（<span class="en">identities</span>）</td><td>存在 \(0,1\in\mathbb{F}\)，使 \(\alpha+0=\alpha\)、\(1\cdot\alpha=\alpha\)</td><td><strong>要证</strong></td><td>两个等式对 \(\mathbb{R}\) 的 0、1 当然成立，要证的是 0、1 属于 \(\mathbb{F}\)：\(0=0+0\sqrt2\)，\(1=1+0\sqrt2\)。答案“单位元”一条</td></tr>
+        <tr><td>6 加法逆元（<span class="en">additive inverse</span>）</td><td>每个 \(\alpha\) 都有 \(\beta\in\mathbb{F}\) 使 \(\alpha+\beta=0\)</td><td><strong>要证</strong></td><td>\(\mathbb{R}\) 里的 \(-\alpha\) 一定存在，要证它还在 \(\mathbb{F}\) 里：\(-(a+b\sqrt2)=(-a)+(-b)\sqrt2\)。答案“加法封闭与加法逆元”一条</td></tr>
+        <tr><td>7 乘法逆元（<span class="en">multiplicative inverse</span>）</td><td>每个 \(\alpha\ne0\) 都有 \(\gamma\in\mathbb{F}\) 使 \(\alpha\gamma=1\)</td><td><strong>要证</strong></td><td>\(\mathbb{R}\) 里的 \(1/\alpha\) 一定存在，要证它还在 \(\mathbb{F}\) 里。全题最难的一步：先证 \(a^{2}-2b^{2}\ne0\)，再有理化。答案“乘法逆元”一条</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>规律（§0 规则 10）：只说“某个等式成立”的 3 行不用证；要求某个数“属于 \(\mathbb{F}\)”的 5 行都要证。官方答案第一句就把不用证的 3 行一次交代掉，后面的 4 条 bullet 正好覆盖要证的 5 行。</p>
+
   <div class="ans">
     <p class="anslbl">答案 · 按官方解答的写法</p>
     <p>因为 \(\mathbb{F}\subset\mathbb{R}\) 且 \(\mathbb{R}\) 是域，加法与乘法的交换律、结合律以及分配律对 \(\mathbb{F}\) 的元素自动成立；只需验证封闭、单位元与逆元（<span class="en">closure, identities, and inverses</span>）。</p>
@@ -769,7 +789,7 @@ html,body{margin:0;padding:0}
 
   <p><span class="runin">老师的写法要点.</span></p>
   <ol class="roman">
-    <li>第一句把自动成立的交换、结合、分配一次打发掉，然后说只剩封闭、单位元、逆元（§0 规则 10）。</li>
+    <li>第一句把自动成立的交换、结合、分配（上面清单里标“不用证”的 3 行）一次打发掉，然后说只剩封闭、单位元、逆元（§0 规则 10）。</li>
     <li>分组跟着运算走：单位元一条；加法封闭和加法逆元合成一条（都只涉及加法）；乘法封闭一条；乘法逆元一条。</li>
     <li>每个“\(\in\mathbb{F}\)”都跟一个 because：系数在 \(\mathbb{Q}\) 里（习惯 2）。</li>
     <li>乘法逆元先证分母 \(a^{2}-2b^{2}\ne0\)，再有理化（§0 规则 11）。分母非零是全题唯一用到 \(\sqrt2\) 无理的地方，也是最容易漏的一步。</li>
