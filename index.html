@@ -281,7 +281,7 @@ html,body{margin:0;padding:0}
 
   <p><span class="runin">习惯 6：用 Remark 往外推一步，这就是最可能出的同类题.</span> 例：P1 的 Remark 把结论推广到 \(\log_{a}b\)（\(a,b\) 互素）；P3 点明原命题是 \(M=\sup S\) 里“接近”的那一半（<span class="en">closeness half</span>）；P6(b) 点明 \((\mathbb{R}_{+},\oplus,\odot)\) 就是 \((\mathbb{R},+,\cdot)\) 经 \(t\mapsto e^{t}\) 搬过去的样子。每题的「同类题」一节就从这些 Remark 展开。</p>
 
-  <p><span class="runin">习惯 7：记号跟老师走.</span> 例：证明末尾用 \(\blacksquare\)（往年官方用 \(\square\)）；真值写 T/F（往年官方写 1/0）；分数写 \(p/q\)；数列写 \(x_{n}\)；比 1 小的候选上界记作 \(u\)，和题面 “\(u\) is an upper bound” 一致；否定号用 \(\lnot\)。</p>
+  <p><span class="runin">习惯 7：记号跟老师走.</span> 例：证明末尾用 \(\blacksquare\)（往年官方用 \(\square\)），而且只放在整道题的最后：P3 不是证明，没有 \(\blacksquare\)；P6 的 \(\blacksquare\) 在 (b) 末尾，(a) 后面没有；真值写 T/F（往年官方写 1/0）；分数写 \(p/q\)；数列写 \(x_{n}\)；比 1 小的候选上界记作 \(u\)，和题面 “\(u\) is an upper bound” 一致；否定号用 \(\lnot\)。</p>
 
   <h4 class="sub">B. 选证法</h4>
 
@@ -450,23 +450,24 @@ html,body{margin:0;padding:0}
 
   <div class="ans">
     <p class="anslbl">答案 · 按官方解答的写法</p>
-    <p>假设（反证，<span class="en">suppose, for contradiction</span>）\(\log_{2}3\) 是有理数。因为 \(3\gt1=2^{0}\)，有 \(\log_{2}3\gt0\)，所以可以写成 \(\log_{2}3=p/q\)，其中 \(p,q\in\mathbb{N}\)。由对数的定义，\(2^{p/q}=3\)；两边取 \(q\) 次方，得</p>
+    <p>假设（反证，<span class="en">suppose, for contradiction</span>）\(\log_{2}3\) 是有理数。因为 \(\log_{2}3\gt0\)，所以可以写成 \(\log_{2}3=p/q\)，其中 \(p,q\in\mathbb{N}\)。由对数的定义，\(2^{p/q}=3\)；两边取 \(q\) 次方，得</p>
 
     \[ 2^{p}=3^{q}. \]
 
-    <p>左边是偶数（<span class="en">even</span>），因为 \(p\ge1\) 使 \(2^{p}=2\cdot2^{p-1}\) 成为能被 2 整除的正整数。右边是奇数（<span class="en">odd</span>），因为 \(3^{q}\)（\(q\ge1\)）是奇数之积，而奇数之积是奇数（HW2 第 3 题）。一个整数不能既是偶数又是奇数，这就是矛盾（<span class="en">contradiction</span>）。所以 \(\log_{2}3\) 是无理数（<span class="en">irrational</span>）。\(\ \blacksquare\)</p>
+    <p>左边是偶数（<span class="en">even</span>），因为 \(p\ge1\) 使 \(2^{p}\) 成为能被 2 整除的正整数。右边是奇数（<span class="en">odd</span>），因为奇数之积是奇数（这里是 \(3^{q}\)，\(q\ge1\)）。一个整数不能既是偶数又是奇数，这就是矛盾（<span class="en">contradiction</span>）。所以 \(\log_{2}3\) 是无理数（<span class="en">irrational</span>）。\(\ \blacksquare\)</p>
+    <p><em>Remark.</em> 同样的论证说明：只要 \(a,b\) 是大于 1 的互素整数（<span class="en">coprime</span>），且不都是同一个底的幂，\(\log_{a}b\) 就是无理数。</p>
   </div>
 
   <p><span class="runin">老师的写法要点.</span></p>
   <ol class="roman">
     <li>第一句就亮出反证假设，方法不必另写一行 Method（习惯 1）。</li>
-    <li>先交代 \(\log_{2}3\gt0\)，才能取 \(p,q\in\mathbb{N}\)。这一步保证了 \(p\ge1\)，否则 \(2^{p}\) 未必是偶数（§0 规则 3）。</li>
+    <li>先交代 \(\log_{2}3\gt0\)（因为 \(3\gt1=2^{0}\)），才能取 \(p,q\in\mathbb{N}\)。这一步保证了 \(p\ge1\)，否则 \(2^{p}\) 未必是偶数（§0 规则 3）。</li>
     <li>把对数翻成整数等式：两边取 \(q\) 次方，得到 \(2^{p}=3^{q}\)。</li>
-    <li>两边的奇偶各给一个理由：左边靠 \(p\ge1\)，右边靠“奇数之积是奇数”（习惯 2）。</li>
-    <li>点名矛盾（一个整数不能既偶又奇），再下结论，以 \(\blacksquare\) 收尾。老师没用“最简分数”（§0 规则 2），也没用质因数分解的唯一性，奇偶就够了。</li>
+    <li>两边的奇偶各给一个理由：左边靠 \(p\ge1\)（\(2^{p}=2\cdot2^{p-1}\)），右边靠“奇数之积是奇数”（本学期 HW2 第 3 题证过）（习惯 2）。</li>
+    <li>点名矛盾（一个整数不能既偶又奇），再下结论，以 \(\blacksquare\) 收尾。老师没用“最简分数”（§0 规则 2），也没用质因数分解的唯一性，奇偶就够了。\(\blacksquare\) 后面紧跟一段 Remark，把结论推广出去，下面的同类题就从它展开。</li>
   </ol>
 
-  <p><span class="runin">同类题.</span> 老师的 Remark 把本题推广到 \(\log_{a}b\)。判别分两步：先看 \(a,b\) 是不是同一个底的幂，是就是有理数；不是就反证，找一个质数 \(r\) 整除等式一边、不整除另一边。一奇一偶就取 \(r=2\)（本题）；两边都是奇数，就换别的质数。Remark 里 \(a,b\) 互素的情形，取 \(a\) 的任一质因子作 \(r\) 即可。</p>
+  <p><span class="runin">同类题.</span> 老师的 Remark 把本题推广到 \(\log_{a}b\)。判别分两步：先看 \(a,b\) 是不是同一个底的幂，是就是有理数；不是就反证，找一个质数 \(r\) 整除等式一边、不整除另一边。一奇一偶就取 \(r=2\)（本题）；两边都是奇数，就换别的质数。Remark 讲的是 \(a,b\) 互素的情形：这时取 \(a\) 的任一质因子作 \(r\) 即可。两个大于 1 的互素整数不可能是同一个底的幂，所以 Remark 后半句对互素的 \(a,b\) 自动成立；真正要先查“同一个底的幂”的，是 \(\log_{4}8\) 这种不互素的情形。</p>
 
   <div class="tw">
     <table>
@@ -491,7 +492,7 @@ html,body{margin:0;padding:0}
 
   <div class="ans">
     <p class="anslbl">答案 · 按官方解答的写法</p>
-    <p>有三个输入（<span class="en">inputs</span>），所以表有 \(2^{3}=8\) 行，全部情形逐行列出（穷举，<span class="en">proof by exhaustion</span>）。</p>
+    <p>有三个输入（<span class="en">inputs</span>），所以表有 \(2^{3}=8\) 行。</p>
 
     <div class="tw">
       <table class="tt">
@@ -516,7 +517,7 @@ html,body{margin:0;padding:0}
 
   <p><span class="runin">老师的写法要点.</span></p>
   <ol class="roman">
-    <li>第一句先报行数：三个输入，\(2^{3}=8\) 行。</li>
+    <li>第一句先报行数：三个输入，\(2^{3}=8\) 行。把 8 种情形全部列出来逐行检查，就是穷举（<span class="en">proof by exhaustion</span>）。</li>
     <li>行序固定为 \(p\) 变得最慢（§0 规则 4），和官方的表逐行对得上。</li>
     <li>中间列 \(q\land r\)、\(p\Rightarrow q\)、\(p\Rightarrow r\) 都单独成列，被比较的两边也各占一列（题面要求 <span class="en">a column for each side</span>）。</li>
     <li>结论先把整列报出来，再说 <span class="en">logically equivalent</span>（习惯 5）。“在哪些行一致”的答案是：全部 8 行。</li>
@@ -563,7 +564,7 @@ html,body{margin:0;padding:0}
 
     <p><span class="toshow">关于 \(M\)：</span>\(M\) 不是 \(S\) 的最小上界（<span class="en">least upper bound</span>）：\(S\) 始终比 \(M\) 低至少 \(\varepsilon\)，把 \(M\) 降到 \(M-\varepsilon\) 仍是上界。</p>
 
-    <p>（原命题正是 \(M=\sup S\) 里“接近”的那一半，即 <span class="en">closeness half</span>；它的否定说明 \(M\) 高估了上确界：\(\sup S\le M-\varepsilon\lt M\)。）\(\ \blacksquare\)</p>
+    <p>（原命题正是 \(M=\sup S\) 里“接近”的那一半，即 <span class="en">closeness half</span>；它的否定说明 \(M\) 高估了上确界（<span class="en">over-estimates the supremum</span>）。）</p>
   </div>
 
   <figure>
@@ -621,7 +622,8 @@ html,body{margin:0;padding:0}
     </li>
     <li>不等式的否定要单独点出来：\(\gt\) 的否定是 \(\le\)。等号归属是这题最容易丢分的地方。</li>
     <li>文字版最后一句把否定翻译回概念：\(M-\varepsilon\) 是上界（习惯 5）。“关于 \(M\)”那一问就从这句接出来，题面要求一句话，老师也只写一句。</li>
-    <li>“接近那一半”：\(M=\sup S\) 等于两半同时成立，上界那一半 \(\forall x\in S,\ x\le M\)，加上接近那一半（也就是原命题）。P4(c) 的第二条，就是对 \(M=1\) 验证接近那一半。</li>
+    <li>“接近那一半”：\(M=\sup S\) 等于两半同时成立，上界那一半 \(\forall x\in S,\ x\le M\)，加上接近那一半（也就是原命题）。P4(c) 的第二条，就是对 \(M=1\) 验证接近那一半。“高估”量化出来是 \(\sup S\le M-\varepsilon\lt M\)（\(S\) 非空且有上界 \(M-\varepsilon\)，所以 \(\sup S\) 存在）。</li>
+    <li>这题不是证明，官方结尾没有 \(\blacksquare\)。</li>
   </ol>
 
   <p><span class="runin">同类题.</span> 老师最可能换的是“对象”：把 sup 换成 inf、换成“有上界”、换成连续。做法完全一样：量词逐个翻，范围不动，最里面的式子取否定，最后翻译回概念。</p>
@@ -807,7 +809,7 @@ html,body{margin:0;padding:0}
 
         \[ 1\cdot(x_{1},x_{2})=(x_{1},0), \]
 
-        <p>当 \(x_{2}\ne0\) 时它不等于 \((x_{1},x_{2})\)（例如 \(1\cdot(0,1)=(0,0)\ne(0,1)\)）。一条公理不成立就足以排除 \(V\)（<span class="en">a single violated axiom is enough</span>）。\(\ \blacksquare\)</p>
+        <p>当 \(x_{2}\ne0\) 时它不等于 \((x_{1},x_{2})\)（例如 \(1\cdot(0,1)=(0,0)\ne(0,1)\)）。一条公理不成立就足以排除 \(V\)（<span class="en">a single violated axiom is enough</span>）。</p>
       </div>
 
       <p><span class="runin">注意：官方解答这里有一句括号不对.</span> 官方在 (a) 末尾加了一句括号，说两条数乘分配律也不成立，只是用不着。逐条代入可以验证，两条分配律都成立：</p>
@@ -833,10 +835,10 @@ html,body{margin:0;padding:0}
           <li><em>对数量加法的分配律</em>（<span class="en">distributivity over scalar addition</span>）：\((\alpha+\beta)\odot x=x^{\alpha+\beta}\) \(=x^{\alpha}x^{\beta}=(\alpha\odot x)\oplus(\beta\odot x)\)。</li>
           <li><em>单位数乘</em>（<span class="en">unit scalar</span>）：\(1\odot x=x^{1}=x\)。</li>
         </ul>
-        <p>十条公理全部成立（<span class="en">all ten axioms hold</span>），所以 \((\mathbb{R}_{+},\mathbb{R})\) 在这两种运算下是向量空间。\(\ \blacksquare\)</p>
+        <p>十条公理全部成立（<span class="en">all ten axioms hold</span>），所以 \((\mathbb{R}_{+},\mathbb{R})\) 在这两种运算下是向量空间。（它其实是通常的 \((\mathbb{R},\mathbb{R})\) 经同构 \(t\mapsto e^{t}\) 得到的像。）\(\ \blacksquare\)</p>
       </div>
 
-      <p><span class="runin">老师最后的 Remark.</span> 为什么十条都成立？因为 \((\mathbb{R}_{+},\oplus,\odot)\) 就是 \((\mathbb{R},+,\cdot)\) 经 \(t\mapsto e^{t}\) 搬过去的样子（老师用的词是同构，<span class="en">isomorphism</span>）。由 \(e^{s+t}=e^{s}e^{t}\) 与 \(e^{\alpha t}=(e^{t})^{\alpha}\)，\(\mathbb{R}\) 里的每条公理翻译过去，正好是 \(\mathbb{R}_{+}\) 里对应的那条：</p>
+      <p><span class="runin">答案最后那句括号在说什么.</span> 为什么十条都成立？因为 \((\mathbb{R}_{+},\oplus,\odot)\) 就是 \((\mathbb{R},+,\cdot)\) 经 \(t\mapsto e^{t}\) 搬过去的样子（老师用的词是同构，<span class="en">isomorphism</span>）。由 \(e^{s+t}=e^{s}e^{t}\) 与 \(e^{\alpha t}=(e^{t})^{\alpha}\)，\(\mathbb{R}\) 里的每条公理翻译过去，正好是 \(\mathbb{R}_{+}\) 里对应的那条：</p>
 
       <div class="tw">
         <table>
@@ -916,7 +918,7 @@ html,body{margin:0;padding:0}
         <tr><td>多条件验证</td><td>(i)(ii) 编号</td><td>带斜体小标题的 bullet，结尾说“都成立”</td></tr>
         <tr><td>否定题</td><td>列出几种等价说法（Each of these is correct）</td><td>一个符号式 + 文字版 + 翻译回概念</td></tr>
         <tr><td>真值</td><td>1 / 0</td><td>T / F</td></tr>
-        <tr><td>结束符</td><td>\(\square\)</td><td>\(\blacksquare\)</td></tr>
+        <tr><td>结束符</td><td>\(\square\)</td><td>\(\blacksquare\)，只放在整道证明题的最后</td></tr>
         <tr><td>推广</td><td>很少</td><td>常用 Remark 推广一步</td></tr>
       </tbody>
     </table>
