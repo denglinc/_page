@@ -1,0 +1,954 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ROB 501 HW3 逐题精解</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400;1,600&amp;family=Noto+Serif+SC:wght@400;600;700&amp;display=swap">
+
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']], processEscapes: true },
+  svg: { fontCache: 'global', scale: 1.02 },
+  options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea'] },
+  startup: {
+    ready: function () {
+      MathJax.startup.defaultReady();
+      MathJax.startup.promise.then(function () {
+        document.documentElement.classList.add('math-ready');
+      });
+    }
+  }
+};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.js"></script>
+
+<style>
+/* ============================================================
+   仿 ROB 501 官方解答 (LaTeX article) 排版
+   单色：全篇不用强调色，层级只靠字重、斜体、下划线与横线
+   ============================================================ */
+:root{
+  --paper:#FFFFFF;
+  --ink:#16181C;
+  --ink-soft:#585C64;
+  --ink-faint:#8A8F98;
+  --rule:#B9BDC4;
+  --rule-faint:#E1E3E7;
+  --measure:40rem;          /* 640px ≈ LaTeX 信纸正文宽；公式别超过 596px */
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#131518; --ink:#E7E9ED; --ink-soft:#A0A5AE; --ink-faint:#767B84;
+    --rule:#454A53; --rule-faint:#272A2F; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#131518; --ink:#E7E9ED; --ink-soft:#A0A5AE; --ink-faint:#767B84;
+  --rule:#454A53; --rule-faint:#272A2F; color-scheme:dark;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+
+body{
+  background:var(--paper);
+  color:var(--ink);
+  /* 读者本机若装了 TeX，直接用真正的 Computer Modern */
+  font-family:"Latin Modern Roman","CMU Serif","Computer Modern Roman",
+              "Crimson Pro","Noto Serif SC",Georgia,"Songti SC",serif;
+  font-size:18px;
+  line-height:1.68;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+
+/* ---------- 版心 ---------- */
+.sheet{max-width:var(--measure);margin:0 auto;padding:0 22px 120px}
+
+/* ---------- \maketitle ---------- */
+.titleblock{text-align:center;padding:74px 0 8px}
+.titleblock h1{font-size:1.62rem;font-weight:700;line-height:1.3;letter-spacing:.005em;margin:0;text-wrap:balance}
+.titleblock .course{margin:.85em 0 0;font-size:.95rem;color:var(--ink-soft)}
+.titleblock .sub{margin:.35em 0 0;font-size:.9rem;font-style:italic;color:var(--ink-faint)}
+
+/* ---------- \tableofcontents（带点线引导） ---------- */
+.toc{margin:52px 0 12px}
+.toc h2{font-size:1.05rem;font-weight:700;margin:0 0 14px;text-align:center}
+.toc ol{list-style:none;margin:0;padding:0}
+.toc li{margin:0}
+.toc a{display:flex;align-items:baseline;gap:.45em;text-decoration:none;color:inherit;padding:3.5px 0;font-size:.97rem}
+.toc a:hover .name{text-decoration:underline;text-underline-offset:2px}
+.toc .lead-dots{flex:1 1 auto;min-width:1.5em;border-bottom:1px dotted var(--rule);transform:translateY(-.28em)}
+.toc .pg{color:var(--ink-faint);font-size:.85rem;flex:0 0 auto}
+
+/* ---------- 边栏跳转（宽屏才出现，刻意压低存在感） ---------- */
+.rail{display:none}
+@media (min-width:1180px){
+  .rail{
+    display:block;position:fixed;top:0;left:22px;
+    width:calc(50% - var(--measure)/2 - 58px);max-width:190px;max-height:100vh;
+    overflow-y:auto;overflow-x:hidden;padding:78px 0 40px;font-size:.82rem;line-height:1.5;
+  }
+  .rail ol{list-style:none;margin:0;padding:0}
+  .rail a{display:block;padding:3px 0 3px 10px;border-left:1px solid var(--rule-faint);color:var(--ink-faint);text-decoration:none}
+  .rail a:hover{color:var(--ink-soft);border-left-color:var(--rule)}
+  .rail a.is-active{color:var(--ink);border-left-color:var(--ink);font-style:italic}
+}
+
+/* ---------- 窄屏顶部跳转 ---------- */
+.topnav{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;margin:34px -22px 0;padding:7px 22px;
+  background:var(--paper);border-bottom:1px solid var(--rule-faint);overflow-x:auto;-webkit-overflow-scrolling:touch}
+.topnav ol{display:flex;gap:14px;list-style:none;margin:0;padding:0}
+.topnav a{font-size:.84rem;color:var(--ink-faint);text-decoration:none;white-space:nowrap}
+.topnav a.is-active{color:var(--ink);font-style:italic}
+@media (min-width:1180px){.topnav{display:none}}
+
+/* ---------- 题 ---------- */
+.prob{margin:0 0 4px;scroll-margin-top:64px}
+section.problem{margin:56px 0 0;scroll-margin-top:64px}
+section.problem:first-of-type{margin-top:44px}
+h2.prob{font-size:1rem;font-weight:400;line-height:1.68;margin:0 0 .55em;text-wrap:pretty}
+h2.prob .lbl{font-weight:700}            /* "Problem N:" 粗体接排，正文同行续写 */
+h3.named{font-size:1.02rem;font-weight:700;margin:52px 0 14px;text-align:center}
+h4.sub{font-family:inherit;font-size:1rem;font-weight:700;margin:30px 0 10px;text-wrap:balance}
+.parthead{text-align:center;font-size:1.05rem;font-weight:700;margin:56px 0 6px;
+  padding-bottom:8px;border-bottom:.8px solid var(--rule-faint)}
+
+/* ---------- (a)(b)(c) 悬挂缩进 / i. ii. iii. ---------- */
+ol.parts{list-style:none;counter-reset:part;margin:1.1em 0;padding-left:2.5em}
+ol.parts > li{counter-increment:part;position:relative;margin:0 0 1.7em}
+ol.parts > li::before{content:"(" counter(part,lower-alpha) ")";position:absolute;left:-2.5em;width:2.1em;text-align:right;font-variant-numeric:tabular-nums}
+ol.parts > li:last-child{margin-bottom:0}
+
+ol.roman{list-style:none;counter-reset:rom;margin:.9em 0;padding-left:2.3em}
+ol.roman > li{counter-increment:rom;position:relative;margin:0 0 .75em}
+ol.roman > li::before{content:counter(rom,lower-roman) ".";position:absolute;left:-2.3em;width:1.9em;text-align:right}
+
+ol.steps{list-style:none;margin:1em 0;padding-left:0}   /* Step 0. / Step 1. 模板用 */
+ol.steps > li{margin:0 0 .85em;padding-left:0}
+ol.steps > li:last-child{margin-bottom:0}
+
+ul.tight{margin:.9em 0;padding-left:1.35em}
+ul.tight li{margin:0 0 .5em}
+
+/* ---------- 正文 ---------- */
+p{margin:0 0 1em}
+li > p:last-child{margin-bottom:0}
+strong{font-weight:700}
+em{font-style:italic}
+a{color:inherit}
+:focus-visible{outline:1.5px solid var(--ink);outline-offset:3px}
+.toshow{font-weight:700}                 /* 粗体接排：要证：/ To show: */
+.runin{text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:from-font}
+                                         /* 下划线接排：Method: / Proof: / Alternative Solution: */
+
+/* ---------- booktabs 表（只有上/中/下三道横线） ---------- */
+.tw{overflow-x:auto;margin:1.5em 0}
+table{border-collapse:collapse;width:100%;min-width:460px;font-size:.94rem;
+  border-top:1.4px solid var(--ink);border-bottom:1.4px solid var(--ink)}
+thead th{font-weight:700;text-align:left;padding:8px 14px 8px 0;border-bottom:.8px solid var(--ink)}
+td{padding:8px 14px 8px 0;text-align:left;vertical-align:top;line-height:1.55}
+th:last-child,td:last-child{padding-right:0}
+th:first-child,td:first-child{white-space:nowrap}
+tbody tr + tr td{border-top:.5px solid var(--rule-faint)}
+caption{caption-side:top;text-align:left;font-size:.88rem;color:var(--ink-soft);padding-bottom:8px}
+
+/* ---------- 图（单色，靠线型区分，深浅色都成立） ---------- */
+figure{margin:1.9em 0}
+.figbox{overflow-x:auto}
+.figbox svg{display:block;margin:0 auto;width:100%;max-width:640px;height:auto}
+@media (max-width:660px){.figbox svg{width:560px;max-width:none;margin:0}}
+figcaption{margin-top:.75em;font-size:.88rem;color:var(--ink-soft);text-align:center;text-wrap:balance}
+.plot-line{fill:none;stroke:var(--ink);stroke-width:1.6;stroke-linejoin:round}
+.plot-axis{stroke:var(--ink);stroke-width:1;fill:none}
+.plot-grid{stroke:var(--rule-faint);stroke-width:1}
+.plot-tick{fill:var(--ink-soft);font-size:11px;font-family:inherit}
+.plot-key{fill:var(--ink);font-size:12px;font-family:inherit}
+
+/* ---------- 数学 ---------- */
+mjx-container{color:var(--ink)}
+mjx-container[display="true"]{max-width:100%;overflow-x:auto;overflow-y:hidden;
+  padding:.3rem .1rem .45rem;margin:.5rem 0 .8rem !important}
+
+/* ---------- 页脚 ---------- */
+.colophon{margin-top:74px;padding-top:18px;border-top:.8px solid var(--rule-faint);
+  font-size:.86rem;color:var(--ink-faint);font-style:italic}
+.colophon p{margin:0 0 .5em}
+hr.thin{border:0;border-top:.8px solid var(--rule-faint);margin:44px 0}
+
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+
+/* ---------- 本页新增 ---------- */
+/* 真值表：各列居中；推出的列前面加竖线（仿官方解答的表）；两个被比较的列用粗体 */
+.tt th,.tt td{text-align:center;padding-left:6px;padding-right:6px}
+.tt th:nth-child(n+4),.tt td:nth-child(n+4){border-left:.8px solid var(--rule)}
+.tt td:nth-child(5),.tt td:nth-child(8){font-weight:700}
+/* 首列里公式较长的表：允许首列折行 */
+.wrap th:first-child,.wrap td:first-child{white-space:normal}
+/* 中文术语后括注的英文术语：斜体，扫读时一眼能找到 */
+.en{font-style:italic}
+/* 按官方解答写法的答案块：左边一道竖线，标出“这一段照着写” */
+.ans{border-left:2px solid var(--ink);padding:.15em 0 .15em 16px;margin:1.1em 0 1.5em}
+.ans > :last-child{margin-bottom:0}
+.anslbl{font-size:.8rem;letter-spacing:.06em;color:var(--ink-soft);margin:0 0 .45em}
+/* 数轴图 */
+.plot-dot{fill:var(--ink)}
+.plot-hollow{fill:var(--paper);stroke:var(--ink);stroke-width:1.3}
+.plot-dash{stroke:var(--ink);stroke-width:1.1;stroke-dasharray:5 4;fill:none}
+.plot-band{fill:var(--rule-faint)}
+/* 窄屏：收紧层层缩进，给行内公式留出宽度 */
+@media (max-width:480px){
+  ol.parts{padding-left:1.9em}
+  ol.parts > li::before{left:-1.9em;width:1.6em}
+  ol.roman{padding-left:1.9em}
+  ol.roman > li::before{left:-1.9em;width:1.5em}
+  ul.tight{padding-left:1.15em}
+  .ans{padding-left:11px}
+}
+/* 独立页面：补上 Artifact 外壳原来提供的重置 */
+html,body{margin:0;padding:0}
+</style>
+</head>
+<body>
+<nav class="rail" aria-label="跳转">
+  <ol>
+    <li><a href="#method">解题思路</a></li>
+    <li><a href="#p1">Problem 1</a></li>
+    <li><a href="#p2">Problem 2</a></li>
+    <li><a href="#p3">Problem 3</a></li>
+    <li><a href="#p4">Problem 4</a></li>
+    <li><a href="#p5">Problem 5</a></li>
+    <li><a href="#p6">Problem 6</a></li>
+    <li><a href="#appendix">附录 · 对照表</a></li>
+  </ol>
+</nav>
+
+<div class="sheet">
+
+<header class="titleblock">
+  <h1>ROB 501: Homework 3 Solutions</h1>
+  <p class="course">Contradiction, the Real Numbers, and Vector Spaces (Week 2)</p>
+  <p class="sub">答案按今年的官方解答 HW3_solutions.pdf 校准；每题再讲老师的写法要点、同类题和往年对照</p>
+</header>
+
+<nav class="toc" aria-label="目录">
+  <h2>目录</h2>
+  <ol>
+    <li><a href="#method"><span class="name">§0 解题思路：老师的胃口、选证法、四类题的规则</span><span class="lead-dots"></span><span class="pg">Week 2 全章</span></a></li>
+    <li><a href="#p1"><span class="name">Problem 1 (contradiction) · 反证法</span><span class="lead-dots"></span><span class="pg">往年 hw02 第 3 题</span></a></li>
+    <li><a href="#p2"><span class="name">Problem 2 (truth table) · 真值表</span><span class="lead-dots"></span><span class="pg">往年 hw02 第 1 题</span></a></li>
+    <li><a href="#p3"><span class="name">Problem 3 (negation) · 量词否定</span><span class="lead-dots"></span><span class="pg">往年 hw02 第 2 题</span></a></li>
+    <li><a href="#p4"><span class="name">Problem 4 (supremum and infimum)</span><span class="lead-dots"></span><span class="pg">讲义 §1.5</span></a></li>
+    <li><a href="#p5"><span class="name">Problem 5 (field) · 验证域</span><span class="lead-dots"></span><span class="pg">讲义 §2.1</span></a></li>
+    <li><a href="#p6"><span class="name">Problem 6 (vector-space axioms)</span><span class="lead-dots"></span><span class="pg">讲义 §2.2</span></a></li>
+    <li><a href="#appendix"><span class="name">附录 · 对照表与官方解答勘误</span><span class="lead-dots"></span><span class="pg">—</span></a></li>
+  </ol>
+</nav>
+
+<nav class="topnav" aria-label="跳转（窄屏）">
+  <ol>
+    <li><a href="#method">§0 思路</a></li>
+    <li><a href="#p1">P1</a></li>
+    <li><a href="#p2">P2</a></li>
+    <li><a href="#p3">P3</a></li>
+    <li><a href="#p4">P4</a></li>
+    <li><a href="#p5">P5</a></li>
+    <li><a href="#p6">P6</a></li>
+    <li><a href="#appendix">附录</a></li>
+  </ol>
+</nav>
+
+<!-- ===================== §0 解题思路 ===================== -->
+<section class="problem" id="method">
+  <h3 class="named">§0 解题思路</h3>
+
+  <p>本次六题分四类：P1 用反证法（<span class="en">proof by contradiction</span>）；P2 用真值表（<span class="en">truth table</span>）穷举（<span class="en">proof by exhaustion</span>），P3 否定量词句（<span class="en">negating quantified statements</span>）；P4 用定义证 \(\sup\)（<span class="en">supremum</span>）；P5、P6 逐条验证域（<span class="en">field</span>）与向量空间（<span class="en">vector space</span>）的公理（<span class="en">axioms</span>）。今年的官方解答（HW/HW3_solutions.pdf）已经发下来了，所以这里先总结老师的写法习惯（A），再讲怎么选证法（B）和四类题各自的规则（C–F）。每题的「答案」按官方解答校准，「同类题」给变式和答案要点。</p>
+
+  <h4 class="sub">A. 老师的胃口：官方解答的七个写法习惯</h4>
+
+  <p><span class="runin">习惯 1：标题先点名方法.</span> 官方六题的标题依次是 (contradiction; …)、(truth table)、(negation)、(supremum and infimum)、(\(\mathbb{F}\) … is a field)、(checking the vector-space axioms)：先亮题型，再写证明。例：P1 第一句就是“假设（反证）\(\log_{2}3\) 是有理数”（<span class="en">Suppose, for contradiction, that …</span>），方法在第一句里已经交代，不必另起一行写 Method。</p>
+
+  <p><span class="runin">习惯 2：每个断言后面跟一个 because / since.</span> 例：P1 不只写“左边偶、右边奇”，而是“左边是偶数，因为 \(p\ge1\) 使 \(2^{p}\) 能被 2 整除；右边是奇数，因为奇数之积是奇数”；P5 每个“\(\in\mathbb{F}\)”后面都跟“因为系数在 \(\mathbb{Q}\) 里”。反面：只写 “LHS even, RHS odd, contradiction”，理由全省，最容易被扣分。</p>
+
+  <p><span class="runin">习惯 3：定义有几条，就逐条核对，结尾说“都成立”.</span> 例：P4(c) 开头就说要核对两条定义性质（<span class="en">the two defining properties</span>），分成两条 bullet；P6(b) 十条公理一条一行，结尾说十条都成立（<span class="en">all ten axioms hold</span>）。题面只点名了其中五条，老师照样写全。</p>
+
+  <p><span class="runin">习惯 4：先做一般计算，再举一个具体的数.</span> 例：P6(a) 先算 \(1\cdot(x_{1},x_{2})=(x_{1},0)\)，指出 \(x_{2}\ne0\) 时两边不等，再补一句“例如 \(1\cdot(0,1)=(0,0)\ne(0,1)\)”。</p>
+
+  <p><span class="runin">习惯 5：结论出来以后，翻译回概念.</span> 例：P2 下结论前先把整列报出来 (T, F, F, F, T, T, T, T)；P3 写完否定式，紧跟一句“也就是说，\(M-\varepsilon\) 是 \(S\) 的上界”。</p>
+
+  <p><span class="runin">习惯 6：用 Remark 往外推一步，这就是最可能出的同类题.</span> 例：P1 的 Remark 把结论推广到 \(\log_{a}b\)（\(a,b\) 互素）；P3 点明原命题是 \(M=\sup S\) 里“接近”的那一半（<span class="en">closeness half</span>）；P6(b) 点明 \((\mathbb{R}_{+},\oplus,\odot)\) 就是 \((\mathbb{R},+,\cdot)\) 经 \(t\mapsto e^{t}\) 搬过去的样子。每题的「同类题」一节就从这些 Remark 展开。</p>
+
+  <p><span class="runin">习惯 7：记号跟老师走.</span> 例：证明末尾用 \(\blacksquare\)（往年官方用 \(\square\)）；真值写 T/F（往年官方写 1/0）；分数写 \(p/q\)；数列写 \(x_{n}\)；比 1 小的候选上界记作 \(u\)，和题面 “\(u\) is an upper bound” 一致；否定号用 \(\lnot\)。</p>
+
+  <h4 class="sub">B. 选证法</h4>
+
+  <p><span class="runin">规则 1：结论是否定句时，先想反证.</span> “无理”“\(\ne0\)”“不存在”这类结论说的是<em>某样东西没有</em>，正面没有能代入计算的式子；设它的反面，就凭空多出一条等式可用。本次各个证明的选法：</p>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>要证的</th><th>证法</th><th>为什么</th></tr></thead>
+      <tbody>
+        <tr><td>\(\log_{2}3\) 无理（P1）</td><td>反证（<span class="en">proof by contradiction</span>）</td><td>设它有理，就多出两个整数 \(p,q\) 可算</td></tr>
+        <tr><td>等价式成立（P2）</td><td>穷举（<span class="en">proof by exhaustion</span>）</td><td>只有 \(2^{3}=8\) 种真假组合，全部列出、逐行核对</td></tr>
+        <tr><td>\(\sup S=1\) 的第二条（P4）</td><td>逆否（<span class="en">contrapositive</span>）</td><td>前提“\(u\) 是上界”是个 \(\forall\) 句，不好用；逆否的前提 \(u\lt1\) 直接给出正数 \(1-u\)</td></tr>
+        <tr><td>\(a^{2}-2b^{2}\ne0\)（P5）</td><td>反证（<span class="en">proof by contradiction</span>）</td><td>设它 \(=0\)，就得到 \(\sqrt2=|a/b|\)</td></tr>
+        <tr><td>(a) 不是向量空间（P6）</td><td>举反例（<span class="en">counterexample</span>）</td><td>推翻“对所有 \(x\) 成立”，一个 \(x\) 就够</td></tr>
+        <tr><td>(b) 是向量空间（P6）</td><td>直接证明（<span class="en">direct proof</span>），逐条验证</td><td>每条公理都是可以直接算的式子</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4 class="sub">C. 反证法</h4>
+
+  <p><span class="runin">规则 2：反证里的矛盾 \(R\land\lnot R\) 不必来自“最简分数”，哪个矛盾最近用哪个.</span> 三道无理数题并排看，矛盾（<span class="en">contradiction</span>）各从哪来：</p>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>要证无理的数</th><th>设成分数后化成</th><th>矛盾从哪来</th></tr></thead>
+      <tbody>
+        <tr><td>\(\sqrt2\)（讲义 Theorem 1）</td><td>\(2n^{2}=m^{2}\)</td><td>设了 \(m,n\) 无公因子（<span class="en">no common factor</span>），却推出二者都是偶数</td></tr>
+        <tr><td>\(\sqrt7\)（往年 hw02 第 3 题）</td><td>\(7q^{2}=p^{2}\)</td><td>设了 \(p,q\) 无公因子，却推出 \(7\) 同时整除二者</td></tr>
+        <tr><td>\(\log_{2}3\)（本次 P1）</td><td>\(2^{p}=3^{q}\)</td><td>左边是偶数，右边是奇数</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>前两行都要先假设“分数已约到最简”（<span class="en">in lowest terms</span>），矛盾正是撞在这条假设上。第三行用不到它：一边偶、一边奇，一步就撞上，官方解答也没写“最简”。所以别机械地照抄 \(\sqrt2\) 的开头，写了“无公因子”不算错，只是后面用不上。</p>
+
+  <p><span class="runin">规则 3：先化成纯整数的等式，并交代正负号.</span> 根号就平方，对数就取指数（最后一步是两边取 \(q\) 次方）：</p>
+
+  \[ \log_{2}3=\frac pq\ \Longrightarrow\ 2^{p/q}=3\ \Longrightarrow\ 2^{p}=3^{q}. \]
+
+  <p>“左边是偶数”要求 \(p\ge1\)：若 \(p=0\)，\(2^{0}=1\) 是奇数；若 \(p\lt0\)，比如 \(2^{-1}=\tfrac12\)，连整数都不是。所以要先用 \(\log_{2}3\gt0\) 把 \(p,q\) 取成正整数，官方解答第二句做的就是这件事。</p>
+
+  <h4 class="sub">D. 真值表与量词否定</h4>
+
+  <p><span class="runin">规则 4：\(k\) 个命题变量就有 \(2^{k}\) 行，按“第一个变量变得最慢”的顺序列.</span> 真值表（<span class="en">truth table</span>）本质上是穷举（<span class="en">proof by exhaustion</span>，Week 1 讲义 §2.3）：把全部 \(2^{k}\) 种真假组合逐一检查，一行都不能漏。三个变量 \(p,q,r\) 共 \(8\) 行，依次是 TTT、TTF、TFT、TFF、FTT、FTF、FFT、FFF：\(p\) 前四行 T、后四行 F，\(q\) 两行一换，\(r\) 一行一换。官方的表就是这个顺序，照着列，批改时能逐行对上。</p>
+
+  <p><span class="runin">规则 5：\(p\Rightarrow q\) 只在“\(p\) 真而 \(q\) 假”时为假.</span> 讲义 §1.3 的记法：\(p\)＝“期末考 100 分”，\(q\)＝“课程及格”。只有考了 100 分却没及格，承诺才算被打破；没考 100 分（\(p\) 为 F）时，及不及格都不违约，所以蕴含式（<span class="en">implication</span>，讲义叫 <span class="en">conditional</span>）为 T。由此得到一条省事的推论：<strong>凡是 \(p\) 为 F 的行，以 \(p\) 为前提的蕴含式一律为 T</strong>（<span class="en">vacuously true</span>），不用算。P2 的 8 行里有 4 行属于这种情况。</p>
+
+  <p><span class="runin">规则 6：否定量词句时，从左往右每个量词翻一次，最后否定最里面的式子；量词后面写的取值范围不动.</span> 老师的说法是 <span class="en">pushing the negation inward, past each quantifier in turn</span>：\(\lnot\forall\Leftrightarrow\exists\lnot\)，\(\lnot\exists\Leftrightarrow\forall\lnot\)（量词即 <span class="en">quantifier</span>）。用讲义 §1.4 Example 2 走一遍（\(y\in\mathbb{R}\) 固定）：</p>
+
+  \[ \begin{aligned}
+     &amp;\lnot\big(\forall\,\varepsilon\gt0,\ \exists\,x\in\mathbb{Q}\ \text{ such that }\ |x-y|\lt\varepsilon\big)\\
+     \iff\ &amp;\exists\,\varepsilon\gt0\ \text{ such that }\ \lnot\big(\exists\,x\in\mathbb{Q}\ \text{ such that }\ |x-y|\lt\varepsilon\big)\\
+     \iff\ &amp;\exists\,\varepsilon\gt0\ \text{ such that }\ \forall\,x\in\mathbb{Q},\ \lnot\big(|x-y|\lt\varepsilon\big)\\
+     \iff\ &amp;\exists\,\varepsilon\gt0\ \text{ such that }\ \forall\,x\in\mathbb{Q},\ |x-y|\ge\varepsilon.
+     \end{aligned} \]
+
+  <p>最后一步用的是 \(\lnot(a\lt b)\iff a\ge b\)。三种常见错误，还拿这个例子演示：</p>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>错误写法</th><th>错在哪</th></tr></thead>
+      <tbody>
+        <tr><td>\(\exists\,\varepsilon\le0,\ \forall\,x\in\mathbb{Q},\ |x-y|\ge\varepsilon\)</td><td>把取值范围也否定了。“\(\varepsilon\gt0\)”说的是在哪里取 \(\varepsilon\)，不是要否定的内容</td></tr>
+        <tr><td>\(\exists\,\varepsilon\gt0,\ \forall\,x\in\mathbb{Q},\ |x-y|\gt\varepsilon\)</td><td>\(\lt\) 的否定是 \(\ge\)，漏了等号</td></tr>
+        <tr><td>\(\exists\,\varepsilon\gt0,\ \exists\,x\in\mathbb{Q},\ |x-y|\ge\varepsilon\)</td><td>只翻了第一个量词，\(\exists x\) 没翻成 \(\forall x\)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>有个快速自检：原命题是真的（有理数可以任意逼近实数，Week 1 讲义 Example 2），所以它的否定必须是假的。可第一行取 \(\varepsilon=0\) 就恒成立，第三行取一个离 \(y\) 很远的 \(x\) 也恒成立。它们都是真命题，一眼就能看出不是否定。</p>
+
+  <h4 class="sub">E. 用定义证 \(\sup\)</h4>
+
+  <p><span class="runin">规则 7：证 \(s=\sup A\) 就是核对定义的两条性质，缺一不可.</span> 老师的说法是 <span class="en">the two defining properties</span>；\(\sup\) 即 <span class="en">supremum</span>，也叫 <span class="en">least upper bound</span>。</p>
+
+  <ol class="roman">
+    <li><em>上界那一半</em>（<span class="en">upper bound</span>）：\(\forall\,x\in A,\ x\le s\)。</li>
+    <li><em>接近那一半</em>（<span class="en">closeness half</span>）：设 \(u\lt s\)，证明 \(u\) 不是上界，即 \(\exists\,x\in A\) 使 \(x\gt u\)。</li>
+  </ol>
+
+  <p>第 (ii) 条是讲义 Definition 3“\(s\le u\) for every upper bound \(u\)”的逆否（<span class="en">contrapositive</span>）。“\(u\) 不是上界”就是把“\(\forall\,x\in A,\ x\le u\)”按规则 6 否定一次，所以只要<em>找出一个</em>超过 \(u\) 的元素。</p>
+
+  <p><span class="runin">模板走一遍（讲义 Example 3）.</span> \(A=\{x\in\mathbb{R}:0\lt x\lt1\}\)，证 \(\sup A=1\)。(i) \(A\) 中每个 \(x\) 都满足 \(x\lt1\)，故 \(1\) 是上界。(ii) 设 \(u\lt1\)：若 \(u\le0\)，取 \(x=\tfrac12\)；若 \(0\lt u\lt1\)，取 \(x=\tfrac{u+1}{2}\)。两种情形都有 \(x\in A\) 且 \(x\gt u\)，所以 \(u\) 不是上界。</p>
+
+  <p>找那个超过 \(u\) 的元素时，它要<em>随 \(u\) 而定</em>。拿 P4 的 \(x_{n}=1-\tfrac1n\) 试两个数：</p>
+
+  <ul class="tight">
+    <li>\(u=0.99\)：要 \(1-\tfrac1n\gt0.99\)，即 \(n\gt100\)。取 \(n=101\)，\(x_{101}=\tfrac{100}{101}\approx0.9901\gt0.99\)。</li>
+    <li>\(u=0.999\)：要 \(n\gt1000\)，取 \(n=1001\)。</li>
+  </ul>
+
+  <p>一般地取 \(n\gt\frac{1}{1-u}\)，这正是 P4(c) 的核心一步。</p>
+
+  <p><span class="runin">规则 8：\(\max\) 必须属于集合，\(\sup\) 不必.</span> 两者的关系是教材 §1.6 的 Important Fact：</p>
+
+  \[ s=\max A\iff\big(s=\sup A\big)\land\big(s\in A\big). \]
+
+  <p>所以先求 \(\sup\)，再看它在不在集合里：在，它就是 \(\max\)（<span class="en">maximum</span>），老师的说法是上确界被取到（<span class="en">attained</span>）；不在，\(\max\) 就不存在。\(\inf\)（<span class="en">infimum</span>，也叫 <span class="en">greatest lower bound</span>）与 \(\min\)（<span class="en">minimum</span>）同理。讲义 Example 3、4 与本次 P4 并排：</p>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>集合</th><th>\(\sup\)</th><th>\(\max\)</th><th>\(\inf\)</th><th>\(\min\)</th></tr></thead>
+      <tbody>
+        <tr><td>\(\{x\in\mathbb{R}:0\lt x\lt1\}\)</td><td>\(1\)</td><td>不存在</td><td>\(0\)</td><td>不存在</td></tr>
+        <tr><td>\(\{x\in\mathbb{R}:x^{2}\le2\}\)</td><td>\(\sqrt2\)</td><td>\(\sqrt2\)</td><td>\(-\sqrt2\)</td><td>\(-\sqrt2\)</td></tr>
+        <tr><td>\(\{1-\tfrac1n:n\in\mathbb{N}\}\)（P4）</td><td>\(1\)</td><td>不存在</td><td>\(0\)</td><td>\(0\)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4 class="sub">F. 验证域与向量空间</h4>
+
+  <p><span class="runin">规则 9：证“是”要逐条验全部公理；证“不是”只要一条公理失败，外加一个具体反例.</span> 反例即 <span class="en">counterexample</span>；这条是讲义 §2.1 的原话，老师在 P6(a) 也说一条公理失败就足以排除。把讲义 Example 5 填一遍：</p>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>集合（通常的加法、乘法）</th><th>域？</th><th>失败的公理与反例</th></tr></thead>
+      <tbody>
+        <tr><td>\(\mathbb{Q},\ \mathbb{R},\ \mathbb{C}\)</td><td>是</td><td>—</td></tr>
+        <tr><td>无理数</td><td>否</td><td>1 封闭（<span class="en">closure</span>）：\(\sqrt2\cdot\sqrt2=2\) 不是无理数</td></tr>
+        <tr><td>\(\mathbb{Z}\)</td><td>否</td><td>7 乘法逆（<span class="en">multiplicative inverse</span>）：\(2\ne0\)，但 \(\tfrac12\notin\mathbb{Z}\)</td></tr>
+        <tr><td>\(\mathbb{N}\)</td><td>否</td><td>5 单位元（<span class="en">identities</span>）：\(0\notin\mathbb{N}\)</td></tr>
+        <tr><td>\(2\times2\) 实矩阵</td><td>否</td><td>2 交换（<span class="en">commutativity</span>）：矩阵乘法一般 \(AB\ne BA\)</td></tr>
+        <tr><td>\(2\times2\) 实对角矩阵</td><td>否</td><td>7 乘法逆：\(\operatorname{diag}(1,0)\ne0\)，但不可逆</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>找反例时先去最可疑的地方：集合“缺了点”（无理数缺了有理数，\(\mathbb{N}\) 缺了 \(0\)），就查封闭和单位元；运算“丢了信息”，就查 \(1\cdot x=x\) 这种要求“什么都不变”的公理；数乘对 \(\alpha\) 不是一次的（比如 \(\alpha^{2}x\)），就查分配律。</p>
+
+  <p><span class="runin">规则 10：子集沿用 \(\mathbb{R}\) 的运算时，等式型公理自动继承，属于型公理必须验证.</span></p>
+
+  <ul class="tight">
+    <li><em>等式型</em>（交换、结合、分配，公理 2–4；即 <span class="en">commutative, associative, distributive laws</span>）说的是“对所有元素某个等式成立”。它对全部实数成立，对子集里的元素当然也成立，题面说的 <span class="en">hold automatically</span> 就是这个意思。</li>
+    <li><em>属于型</em>（封闭、\(0\) 与 \(1\)、两种逆元，公理 1、5–7；即 <span class="en">closure, identities, inverses</span>）要求某个结果<em>留在这个集合里</em>。集合一变小，就可能留不住。</li>
+  </ul>
+
+  <p>反面例子是无理数集：等式型全都成立，可 \(\sqrt2\cdot\sqrt2=2\) 跑出了集合。正面例子是 \(\mathbb{Q}\)：对整数 \(p,q,r,s\)（\(q,s\ne0\)），</p>
+
+  \[ \frac pq+\frac rs=\frac{ps+qr}{qs},\qquad \frac pq\cdot\frac rs=\frac{pr}{qs},\qquad \Big(\frac pq\Big)^{-1}=\frac qp\quad(p\ne0), \]
+
+  <p>结果都还是有理数，再加上 \(0,1\in\mathbb{Q}\)、\(-\tfrac pq=\tfrac{-p}{q}\)，属于型公理就验完了。P5 是把这套验证从 \(\mathbb{Q}\) 搬到 \(a+b\sqrt2\) 上，官方解答第一句也是先把等式型公理一次打发掉。</p>
+
+  <p><span class="runin">规则 11：求倒数用“共轭”把分母有理化，然后回头确认分母不为零.</span> 共轭即 <span class="en">conjugate</span>，分母有理化即 <span class="en">rationalize the denominator</span>。复数是熟悉的例子：</p>
+
+  \[ \frac1{a+jb}=\frac{a-jb}{(a+jb)(a-jb)}=\frac{a-jb}{a^{2}+b^{2}}, \]
+
+  <p>\(a+jb\ne0\) 时 \(a^{2}+b^{2}\gt0\)，分母自动非零。P5 用同一招得到 \(\frac1{a+b\sqrt2}=\frac{a-b\sqrt2}{a^{2}-2b^{2}}\)，但这次分母<em>不</em>自动非零：对实数 \(a=\sqrt2,\ b=1\) 就有 \(a^{2}-2b^{2}=0\)。保证它非零的，只有“\(a,b\) 是有理数”加上“\(\sqrt2\) 是无理数”，这就是 P5 里要用反证的那一步。</p>
+
+  <p><span class="runin">规则 12：运算换成新定义时，零向量和加法逆元要按定义解方程求，不能默认是数 \(0\) 与 \(-x\).</span> 零向量即 <span class="en">zero vector</span>，加法逆元即 <span class="en">additive inverse</span>。例：在 \(\mathbb{R}\) 上定义 \(x\oplus y=x+y-3\)。</p>
+
+  <ul class="tight">
+    <li>零向量 \(z\)：要 \(z\oplus x=x\)，即 \(z+x-3=x\)，得 \(z=3\)。</li>
+    <li>\(x\) 的加法逆 \(\bar x\)：要 \(x\oplus\bar x=z=3\)，即 \(x+\bar x-3=3\)，得 \(\bar x=6-x\)。</li>
+  </ul>
+
+  <p>这里的“零向量”是数 \(3\)；P6(b) 也是这样，那里的零向量是数 \(1\)。P6 的同类题里还会看到，同一个 \(\oplus\) 配上 \(\alpha\odot x=\alpha(x-3)+3\) 十条公理全成立，配普通数乘分配律就坏了。</p>
+</section>
+
+<p class="parthead">Part A. Logic and the real numbers</p>
+
+<!-- ===================== Problem 1 ===================== -->
+<section class="problem" id="p1">
+  <h2 class="prob"><span class="lbl">Problem 1 (contradiction; \(\log_{2}3\) is irrational).</span> Prove that \(\log_{2}3\) is irrational.</h2>
+
+  <div class="ans">
+    <p class="anslbl">答案 · 按官方解答的写法</p>
+    <p>假设（反证，<span class="en">suppose, for contradiction</span>）\(\log_{2}3\) 是有理数。因为 \(3\gt1=2^{0}\)，有 \(\log_{2}3\gt0\)，所以可以写成 \(\log_{2}3=p/q\)，其中 \(p,q\in\mathbb{N}\)。由对数的定义，\(2^{p/q}=3\)；两边取 \(q\) 次方，得</p>
+
+    \[ 2^{p}=3^{q}. \]
+
+    <p>左边是偶数（<span class="en">even</span>），因为 \(p\ge1\) 使 \(2^{p}=2\cdot2^{p-1}\) 成为能被 2 整除的正整数。右边是奇数（<span class="en">odd</span>），因为 \(3^{q}\)（\(q\ge1\)）是奇数之积，而奇数之积是奇数（HW2 第 3 题）。一个整数不能既是偶数又是奇数，这就是矛盾（<span class="en">contradiction</span>）。所以 \(\log_{2}3\) 是无理数（<span class="en">irrational</span>）。\(\ \blacksquare\)</p>
+  </div>
+
+  <p><span class="runin">老师的写法要点.</span></p>
+  <ol class="roman">
+    <li>第一句就亮出反证假设，方法不必另写一行 Method（习惯 1）。</li>
+    <li>先交代 \(\log_{2}3\gt0\)，才能取 \(p,q\in\mathbb{N}\)。这一步保证了 \(p\ge1\)，否则 \(2^{p}\) 未必是偶数（§0 规则 3）。</li>
+    <li>把对数翻成整数等式：两边取 \(q\) 次方，得到 \(2^{p}=3^{q}\)。</li>
+    <li>两边的奇偶各给一个理由：左边靠 \(p\ge1\)，右边靠“奇数之积是奇数”（习惯 2）。</li>
+    <li>点名矛盾（一个整数不能既偶又奇），再下结论，以 \(\blacksquare\) 收尾。老师没用“最简分数”（§0 规则 2），也没用质因数分解的唯一性，奇偶就够了。</li>
+  </ol>
+
+  <p><span class="runin">同类题.</span> 老师的 Remark 把本题推广到 \(\log_{a}b\)。判别分两步：先看 \(a,b\) 是不是同一个底的幂，是就是有理数；不是就反证，找一个质数 \(r\) 整除等式一边、不整除另一边。一奇一偶就取 \(r=2\)（本题）；两边都是奇数，就换别的质数。Remark 里 \(a,b\) 互素的情形，取 \(a\) 的任一质因子作 \(r\) 即可。</p>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>题</th><th>设 \(=p/q\) 后</th><th>矛盾（或结论）</th></tr></thead>
+      <tbody>
+        <tr><td>\(\log_{2}5\)</td><td>\(2^{p}=5^{q}\)</td><td>左偶右奇，和本题一模一样</td></tr>
+        <tr><td>\(\log_{3}2\)</td><td>\(3^{p}=2^{q}\)</td><td>左奇右偶，奇偶换了边而已</td></tr>
+        <tr><td>\(\log_{3}5\)</td><td>\(3^{p}=5^{q}\)</td><td>两边都是奇数，奇偶失效。改看 3：它整除左边（\(p\ge1\)），却不整除右边（3 是质数且 \(3\nmid5\)）</td></tr>
+        <tr><td>\(\log_{4}8\)</td><td>\(4^{3/2}=8\)</td><td>陷阱：它是有理数 \(\tfrac32\)，因为 \(4=2^{2}\)、\(8=2^{3}\) 是同一个底的幂</td></tr>
+        <tr><td>\(\log_{2}6\)</td><td>\(=1+\log_{2}3\)</td><td>有理数加无理数还是无理数：若它等于有理数 \(s\)，则 \(\log_{2}3=s-1\in\mathbb{Q}\)，与本题矛盾</td></tr>
+        <tr><td>\(\sqrt3\)</td><td>\(3q^{2}=p^{2}\)</td><td>走往年 \(\sqrt7\) 的路：设 \(p/q\) 已约到最简，用“\(3\mid p^{2}\Rightarrow3\mid p\)”推出 \(p,q\) 都被 3 整除</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p><span class="runin">对照往年题.</span> 往年 hw02 第 3 题证 \(\sqrt7\) 无理。2022 年官方解答用 Claim / To show / Method / Assume 的骨架，矛盾来自最简分数（<span class="en">no common divisors other than 1</span>），结尾写“不能写成两个整数之比”（<span class="en">cannot be expressed as the ratio of two integers</span>）。今年老师改成一段散文，矛盾来自奇偶。两种写法逻辑都对；按今年老师的口味，写散文，每步带 because。</p>
+</section>
+
+<!-- ===================== Problem 2 ===================== -->
+<section class="problem" id="p2">
+  <h2 class="prob"><span class="lbl">Problem 2 (truth table).</span> Use a truth table to verify the logical equivalence \(\ p\Rightarrow(q\land r)\ \equiv\ (p\Rightarrow q)\land(p\Rightarrow r)\). Show the full table, with a column for each side of the equivalence, and state where the two columns agree.</h2>
+
+  <div class="ans">
+    <p class="anslbl">答案 · 按官方解答的写法</p>
+    <p>有三个输入（<span class="en">inputs</span>），所以表有 \(2^{3}=8\) 行，全部情形逐行列出（穷举，<span class="en">proof by exhaustion</span>）。</p>
+
+    <div class="tw">
+      <table class="tt">
+        <thead>
+          <tr><th>\(p\)</th><th>\(q\)</th><th>\(r\)</th><th>\(q\land r\)</th><th>\(p\Rightarrow(q\land r)\)</th><th>\(p\Rightarrow q\)</th><th>\(p\Rightarrow r\)</th><th>\((p\Rightarrow q)\land(p\Rightarrow r)\)</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>T</td><td>T</td><td>T</td><td>T</td><td>T</td><td>T</td><td>T</td><td>T</td></tr>
+          <tr><td>T</td><td>T</td><td>F</td><td>F</td><td>F</td><td>T</td><td>F</td><td>F</td></tr>
+          <tr><td>T</td><td>F</td><td>T</td><td>F</td><td>F</td><td>F</td><td>T</td><td>F</td></tr>
+          <tr><td>T</td><td>F</td><td>F</td><td>F</td><td>F</td><td>F</td><td>F</td><td>F</td></tr>
+          <tr><td>F</td><td>T</td><td>T</td><td>T</td><td>T</td><td>T</td><td>T</td><td>T</td></tr>
+          <tr><td>F</td><td>T</td><td>F</td><td>F</td><td>T</td><td>T</td><td>T</td><td>T</td></tr>
+          <tr><td>F</td><td>F</td><td>T</td><td>F</td><td>T</td><td>T</td><td>T</td><td>T</td></tr>
+          <tr><td>F</td><td>F</td><td>F</td><td>F</td><td>T</td><td>T</td><td>T</td><td>T</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>\(p\Rightarrow(q\land r)\) 这一列与 \((p\Rightarrow q)\land(p\Rightarrow r)\) 这一列在全部 8 行完全相同，都是 (T, F, F, F, T, T, T, T)，所以两式逻辑等价（<span class="en">logically equivalent</span>）。\(\ \blacksquare\)</p>
+  </div>
+
+  <p><span class="runin">老师的写法要点.</span></p>
+  <ol class="roman">
+    <li>第一句先报行数：三个输入，\(2^{3}=8\) 行。</li>
+    <li>行序固定为 \(p\) 变得最慢（§0 规则 4），和官方的表逐行对得上。</li>
+    <li>中间列 \(q\land r\)、\(p\Rightarrow q\)、\(p\Rightarrow r\) 都单独成列，被比较的两边也各占一列（题面要求 <span class="en">a column for each side</span>）。</li>
+    <li>结论先把整列报出来，再说 <span class="en">logically equivalent</span>（习惯 5）。“在哪些行一致”的答案是：全部 8 行。</li>
+  </ol>
+
+  <p><span class="runin">自查.</span> 由 §0 规则 5，左边为 F \(\iff\) \(p\) 为 T 且 \(q\land r\) 为 F \(\iff\) \(p\) 为 T 且 \(q,r\) 至少一个为 F；右边为 F \(\iff\) \(p\Rightarrow q\)、\(p\Rightarrow r\) 至少一个为 F \(\iff\) \(p\) 为 T 且 \(q,r\) 至少一个为 F。两边为 F 的条件一字不差，正是 TTF、TFT、TFF 三行；\(p\) 为 F 的四行，两边都是 <span class="en">vacuously true</span>。</p>
+
+  <p><span class="runin">同类题.</span> 题目若问“是否等价”：等价，就照本题写满整张表、报出两列；不等价，只要指出一行两列不同，写“在 \((p,q,r)=(\mathrm{T},\mathrm{F},\mathrm{F})\) 这一行两列不同，所以不等价”。一行反例就够，道理和 P6(a) 的“一条公理失败就够”一样。判断时先用 §0 规则 5 比较两边“何时为 F”，几秒钟就有答案：</p>
+
+  <div class="tw">
+    <table class="wrap">
+      <thead><tr><th>两式</th><th>等价？</th><th>依据</th></tr></thead>
+      <tbody>
+        <tr><td>\((p\lor q)\Rightarrow r\) 与 \((p\Rightarrow r)\land(q\Rightarrow r)\)</td><td>等价</td><td>两边都只在“\(p\) 或 \(q\) 为 T，且 \(r\) 为 F”时为 F</td></tr>
+        <tr><td>\(p\Rightarrow(q\lor r)\) 与 \((p\Rightarrow q)\lor(p\Rightarrow r)\)</td><td>等价</td><td>两边都只在“\(p\) 为 T，\(q,r\) 都为 F”时为 F</td></tr>
+        <tr><td>\((p\land q)\Rightarrow r\) 与 \((p\Rightarrow r)\land(q\Rightarrow r)\)</td><td>不等价</td><td>TFF 这一行左边 T、右边 F。正确的右边是 \((p\Rightarrow r)\lor(q\Rightarrow r)\)</td></tr>
+        <tr><td>\(p\Rightarrow q\) 与 \(q\Rightarrow p\)（逆命题，<span class="en">converse</span>）</td><td>不等价</td><td>\(p\) 为 T、\(q\) 为 F 时左边 F、右边 T</td></tr>
+        <tr><td>\(p\Rightarrow q\) 与 \(\lnot q\Rightarrow\lnot p\)（逆否，<span class="en">contrapositive</span>）</td><td>等价</td><td>讲义 §1.2</td></tr>
+        <tr><td>\(\lnot(p\Rightarrow q)\) 与 \(p\land\lnot q\)</td><td>等价</td><td>否定蕴含式的公式，P3 的同类题要用</td></tr>
+        <tr><td>\((p\Rightarrow q)\Rightarrow r\) 与 \(p\Rightarrow(q\Rightarrow r)\)</td><td>不等价</td><td>\(p\)、\(r\) 都为 F 时（\(q\) 任意）左边 F、右边 T</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p><span class="runin">对照往年题.</span> 往年 hw02 第 1 题用真值表验证德摩根律（<span class="en">De Morgan’s laws</span>）\(\lnot(P\land Q)\equiv\lnot P\lor\lnot Q\)，两个变量 4 行，官方解答用 1/0 记真假。今年官方用 T/F，和讲义一致，照今年写。</p>
+</section>
+
+<!-- ===================== Problem 3 ===================== -->
+<section class="problem" id="p3">
+  <h2 class="prob"><span class="lbl">Problem 3 (negation).</span> Let \(S\) be a nonempty set of real numbers and let \(M\in\mathbb{R}\). Write the negation of the statement below, simplified so that no negation symbol stands to the left of a quantifier, and express the negation in words. Then, in one sentence, say what the negation tells you about \(M\) as an upper bound of \(S\).</h2>
+
+  \[ \forall\,\varepsilon\gt0,\ \ \exists\,x\in S\ \text{ such that }\ x\gt M-\varepsilon. \]
+
+  <div class="ans">
+    <p class="anslbl">答案 · 按官方解答的写法</p>
+    <p>把否定依次推过每个量词（<span class="en">pushing the negation inward, past each quantifier in turn</span>），并用“\(x\gt M-\varepsilon\) 的否定是 \(x\le M-\varepsilon\)”：</p>
+
+    \[ \begin{aligned}
+       &amp;\lnot\big(\forall\,\varepsilon\gt0,\ \exists\,x\in S\ \text{ s.t. }\ x\gt M-\varepsilon\big)\\
+       \iff\ &amp;\exists\,\varepsilon\gt0\ \text{ such that }\ \forall\,x\in S,\ x\le M-\varepsilon.
+       \end{aligned} \]
+
+    <p><span class="toshow">文字表述（<span class="en">in words</span>）：</span>存在某个 \(\varepsilon\gt0\)，使 \(S\) 的每个元素都满足 \(x\le M-\varepsilon\)；也就是说，\(M-\varepsilon\) 是 \(S\) 的一个上界（<span class="en">upper bound</span>）。</p>
+
+    <p><span class="toshow">关于 \(M\)：</span>\(M\) 不是 \(S\) 的最小上界（<span class="en">least upper bound</span>）：\(S\) 始终比 \(M\) 低至少 \(\varepsilon\)，把 \(M\) 降到 \(M-\varepsilon\) 仍是上界。</p>
+
+    <p>（原命题正是 \(M=\sup S\) 里“接近”的那一半，即 <span class="en">closeness half</span>；它的否定说明 \(M\) 高估了上确界：\(\sup S\le M-\varepsilon\lt M\)。）\(\ \blacksquare\)</p>
+  </div>
+
+  <figure>
+<div class="figbox">
+<svg viewBox="0 0 640 232" role="img" aria-label="上：原命题成立时 M 减 epsilon 右边总有 S 的点；下：否定成立时 S 全在 M 减 epsilon 左边，与 M 之间留出空隙">
+<title>Problem 3：原命题与否定在数轴上的样子</title>
+<text class="plot-key" x="30.0" y="24.0" text-anchor="start">原命题（图中 <tspan font-style="italic">M</tspan> = sup <tspan font-style="italic">S</tspan>）：任取 <tspan font-style="italic">ε</tspan> &gt; 0，<tspan font-style="italic">M</tspan> − <tspan font-style="italic">ε</tspan> 右边都有 <tspan font-style="italic">S</tspan> 的点</text>
+<line class="plot-axis" x1="30.0" y1="78.0" x2="610.0" y2="78.0"/>
+<circle class="plot-dot" cx="160.0" cy="78.0" r="3.4"/>
+<circle class="plot-dot" cx="313.6" cy="78.0" r="3.4"/>
+<circle class="plot-dot" cx="393.5" cy="78.0" r="3.4"/>
+<circle class="plot-dot" cx="435.0" cy="78.0" r="3.2"/>
+<circle class="plot-dot" cx="456.6" cy="78.0" r="2.8"/>
+<circle class="plot-dot" cx="467.8" cy="78.0" r="2.3"/>
+<circle class="plot-dot" cx="473.7" cy="78.0" r="1.8"/>
+<circle class="plot-dot" cx="476.7" cy="78.0" r="1.4"/>
+<path class="plot-axis" d="M424.0,53.0 V48.0 H480.0 V53.0"/>
+<text class="plot-key" x="452.0" y="42.0" text-anchor="middle"><tspan font-style="italic">ε</tspan></text>
+<line class="plot-dash" x1="424.0" y1="53.0" x2="424.0" y2="86.0"/>
+<line class="plot-axis" x1="480.0" y1="70.0" x2="480.0" y2="86.0"/>
+<text class="plot-key" x="424.0" y="102.0" text-anchor="middle"><tspan font-style="italic">M</tspan> − <tspan font-style="italic">ε</tspan></text>
+<text class="plot-key" x="480.0" y="102.0" text-anchor="middle"><tspan font-style="italic">M</tspan></text>
+<text class="plot-key" x="30.0" y="140.0" text-anchor="start">否定：有一个 <tspan font-style="italic">ε</tspan> 使 <tspan font-style="italic">S</tspan> 全落在 <tspan font-style="italic">M</tspan> − <tspan font-style="italic">ε</tspan> 左边，<tspan font-style="italic">M</tspan> − <tspan font-style="italic">ε</tspan> 已是上界</text>
+<rect class="plot-band" x="410" y="183" width="70" height="14"/>
+<line class="plot-axis" x1="30.0" y1="190.0" x2="610.0" y2="190.0"/>
+<circle class="plot-dot" cx="160.0" cy="190.0" r="3.4"/>
+<circle class="plot-dot" cx="265.6" cy="190.0" r="3.4"/>
+<circle class="plot-dot" cx="320.5" cy="190.0" r="3.4"/>
+<circle class="plot-dot" cx="349.1" cy="190.0" r="3.2"/>
+<circle class="plot-dot" cx="363.9" cy="190.0" r="2.8"/>
+<circle class="plot-dot" cx="371.6" cy="190.0" r="2.3"/>
+<circle class="plot-dot" cx="375.7" cy="190.0" r="1.8"/>
+<circle class="plot-dot" cx="377.7" cy="190.0" r="1.4"/>
+<line class="plot-axis" x1="380.0" y1="184.0" x2="380.0" y2="196.0"/>
+<text class="plot-key" x="380.0" y="176.0" text-anchor="middle">sup <tspan font-style="italic">S</tspan></text>
+<text class="plot-key" x="445.0" y="176.0" text-anchor="middle">空隙</text>
+<line class="plot-dash" x1="410.0" y1="178.0" x2="410.0" y2="198.0"/>
+<line class="plot-axis" x1="480.0" y1="182.0" x2="480.0" y2="198.0"/>
+<text class="plot-key" x="410.0" y="214.0" text-anchor="middle"><tspan font-style="italic">M</tspan> − <tspan font-style="italic">ε</tspan></text>
+<text class="plot-key" x="480.0" y="214.0" text-anchor="middle"><tspan font-style="italic">M</tspan></text>
+</svg>
+</div>
+<figcaption>图 1：Problem 3 的两种情形。上：原命题成立（图中 \(M=\sup S\)），不论 \(\varepsilon\) 多小，\(M-\varepsilon\) 右边总有 \(S\) 的点，所以比 \(M\) 小的数都不是上界。下：否定成立，\(S\) 全落在 \(M-\varepsilon\) 左边，\(M-\varepsilon\) 已是上界；\(M\) 与 \(S\) 之间留出一段空隙，\(M\) 不是最小上界。</figcaption>
+</figure>
+
+  <p><span class="runin">老师的写法要点.</span></p>
+  <ol class="roman">
+    <li>“依次”（<span class="en">in turn</span>）：一次只翻一个量词。老师压成了一行，展开就是 §0 规则 6 的四步：
+      \[ \begin{aligned}
+         &amp;\lnot\big(\forall\,\varepsilon\gt0,\ \exists\,x\in S,\ x\gt M-\varepsilon\big)\\
+         \iff\ &amp;\exists\,\varepsilon\gt0,\ \lnot\big(\exists\,x\in S,\ x\gt M-\varepsilon\big)\\
+         \iff\ &amp;\exists\,\varepsilon\gt0,\ \forall\,x\in S,\ \lnot\big(x\gt M-\varepsilon\big)\\
+         \iff\ &amp;\exists\,\varepsilon\gt0,\ \forall\,x\in S,\ x\le M-\varepsilon.
+         \end{aligned} \]
+    </li>
+    <li>不等式的否定要单独点出来：\(\gt\) 的否定是 \(\le\)。等号归属是这题最容易丢分的地方。</li>
+    <li>文字版最后一句把否定翻译回概念：\(M-\varepsilon\) 是上界（习惯 5）。“关于 \(M\)”那一问就从这句接出来，题面要求一句话，老师也只写一句。</li>
+    <li>“接近那一半”：\(M=\sup S\) 等于两半同时成立，上界那一半 \(\forall x\in S,\ x\le M\)，加上接近那一半（也就是原命题）。P4(c) 的第二条，就是对 \(M=1\) 验证接近那一半。</li>
+  </ol>
+
+  <p><span class="runin">同类题.</span> 老师最可能换的是“对象”：把 sup 换成 inf、换成“有上界”、换成连续。做法完全一样：量词逐个翻，范围不动，最里面的式子取否定，最后翻译回概念。</p>
+
+  <ul class="tight">
+    <li><em>\(M\) 是 \(S\) 的上界</em>：\(\forall x\in S,\ x\le M\)。否定：\(\exists x\in S,\ x\gt M\)，有元素超过 \(M\)，\(M\) 太小。</li>
+    <li><em>\(S\) 有上界</em>：\(\exists M\in\mathbb{R}\ \forall x\in S,\ x\le M\)。否定：\(\forall M\in\mathbb{R}\ \exists x\in S,\ x\gt M\)，\(S\) 无上界，\(\sup S=+\infty\)。</li>
+    <li><em>inf 的接近那一半</em>：\(\forall\varepsilon\gt0\ \exists x\in S,\ x\lt m+\varepsilon\)。否定：\(\exists\varepsilon\gt0\ \forall x\in S,\ x\ge m+\varepsilon\)，即 \(m+\varepsilon\) 是下界，\(m\) 低估了下确界。</li>
+    <li><em>整个 \(M=\sup S\)</em>：两半用 \(\land\) 连着，否定时按德摩根律变成 \(\lor\)。要么 \(\exists x\in S,\ x\gt M\)（\(M\) 太小，不是上界），要么 \(\exists\varepsilon\gt0\ \forall x\in S,\ x\le M-\varepsilon\)（\(M\) 太大，高估了）。</li>
+    <li><em>往年 hw02 第 2(c) 题</em>：\(\exists v\in\mathbb{R}^{n},\ v\ne0,\ Av=\lambda v\)。否定：\(\forall v\in\mathbb{R}^{n}\) with \(v\ne0\)，\(Av\ne\lambda v\)。限制条件 \(v\ne0\) 不动；也可以写成 \(\forall v\in\mathbb{R}^{n}\)，\(v\ne0\Rightarrow Av\ne\lambda v\)。</li>
+    <li><em>连续（Rec #2；往年 hw02 第 2(d) 题同型）</em>：\(\forall\varepsilon\gt0\ \exists\delta\gt0\ \forall x\)，\(|x-x_{0}|\lt\delta\Rightarrow|f(x)-f(x_{0})|\lt\varepsilon\)。否定：\(\exists\varepsilon\gt0\ \forall\delta\gt0\ \exists x\)，\(|x-x_{0}|\lt\delta\) 且 \(|f(x)-f(x_{0})|\ge\varepsilon\)。蕴含式的否定用 \(\lnot(p\Rightarrow q)\equiv p\land\lnot q\)（P2 的同类题）。</li>
+  </ul>
+
+  <p><span class="runin">对照往年题.</span> 往年 hw02 第 2 题整题都是否定，2022 年官方解答每小题列出好几种等价说法（Each of these is correct）。今年老师只给一个符号式，再加文字版和“翻译回概念”的一句。照今年的格式写：符号式、文字、含义三样都要有。</p>
+</section>
+
+<!-- ===================== Problem 4 ===================== -->
+<section class="problem" id="p4">
+  <h2 class="prob"><span class="lbl">Problem 4 (supremum and infimum).</span> Let \(S=\big\{\,1-\frac1n:\ n\in\mathbb{N}\,\big\}\), where \(\mathbb{N}=\{1,2,3,\dots\}\). (Recall: \(u\) is an <em>upper bound</em> of \(S\) if \(x\le u\) for all \(x\in S\); \(\sup S\) is the least upper bound; \(\max S\) is an upper bound that belongs to \(S\); and \(\inf S\), \(\min S\) are the analogous notions for lower bounds.)</h2>
+
+  <div class="ans">
+    <p class="anslbl">答案 · 按官方解答的写法</p>
+    <p>记 \(x_{n}=1-\frac1n\)（\(n\in\mathbb{N}\)），则 \(x_{1}=0\lt x_{2}=\tfrac12\lt x_{3}=\tfrac23\lt\cdots\)，是一个递增数列，取值趋近 1。</p>
+  </div>
+
+  <figure>
+<div class="figbox">
+<svg viewBox="0 0 640 150" role="img" aria-label="S 的元素 0, 1/2, 2/3, 3/4 等在数轴上向 1 聚集，1 本身不在 S 中">
+<title>Problem 4：S = {1 − 1/n} 在数轴上</title>
+<line class="plot-axis" x1="36.0" y1="88.0" x2="612.0" y2="88.0"/>
+<circle class="plot-dot" cx="60.0" cy="88.0" r="4"/>
+<circle class="plot-dot" cx="320.0" cy="88.0" r="4"/>
+<circle class="plot-dot" cx="406.7" cy="88.0" r="4"/>
+<circle class="plot-dot" cx="450.0" cy="88.0" r="4"/>
+<circle class="plot-dot" cx="476.0" cy="88.0" r="4"/>
+<circle class="plot-dot" cx="493.3" cy="88.0" r="4"/>
+<circle class="plot-dot" cx="505.7" cy="88.0" r="3"/>
+<circle class="plot-dot" cx="515.0" cy="88.0" r="3"/>
+<circle class="plot-dot" cx="522.2" cy="88.0" r="2.4"/>
+<circle class="plot-dot" cx="528.0" cy="88.0" r="2.4"/>
+<circle class="plot-dot" cx="536.7" cy="88.0" r="1.7"/>
+<circle class="plot-dot" cx="545.3" cy="88.0" r="1.7"/>
+<circle class="plot-dot" cx="554.0" cy="88.0" r="1.7"/>
+<circle class="plot-dot" cx="562.7" cy="88.0" r="1.7"/>
+<circle class="plot-dot" cx="569.6" cy="88.0" r="1.7"/>
+<circle class="plot-hollow" cx="580.0" cy="88" r="4.5"/>
+<line class="plot-dash" x1="465.6" y1="62.0" x2="465.6" y2="96.0"/>
+<path class="plot-axis" d="M465.6,67.0 V62.0 H580.0 V67.0"/>
+<text class="plot-key" x="522.8" y="52.0" text-anchor="middle">这一段里还有 <tspan font-style="italic">S</tspan> 的点</text>
+<text class="plot-key" x="60.0" y="112.0" text-anchor="middle">0</text>
+<text class="plot-key" x="320.0" y="112.0" text-anchor="middle">1/2</text>
+<text class="plot-key" x="406.7" y="112.0" text-anchor="middle">2/3</text>
+<text class="plot-key" x="465.6" y="112.0" text-anchor="middle"><tspan font-style="italic">u</tspan></text>
+<text class="plot-key" x="580.0" y="112.0" text-anchor="middle">1</text>
+<text class="plot-key" x="60.0" y="132.0" text-anchor="middle">= min <tspan font-style="italic">S</tspan> = inf <tspan font-style="italic">S</tspan></text>
+<text class="plot-key" x="580.0" y="132.0" text-anchor="middle">= sup <tspan font-style="italic">S</tspan> ∉ <tspan font-style="italic">S</tspan></text>
+</svg>
+</div>
+<figcaption>图 2：Problem 4。实心点是 \(S\) 的元素 \(0,\tfrac12,\tfrac23,\tfrac34,\dots\)，越往右越密，向 \(1\) 聚集却碰不到 \(1\)（空心圈）。\(0\) 在集合里，所以既是 \(\min S\) 也是 \(\inf S\)；\(1\) 不在集合里，是 \(\sup S\) 但不是 \(\max S\)。虚线 \(u\) 是任取的一个小于 \(1\) 的数，它与 \(1\) 之间总还有 \(S\) 的点，所以 \(u\) 不是上界，这就是 (c) 的第二条。</figcaption>
+</figure>
+
+  <ol class="parts">
+    <li>
+      <p><em>Find \(\sup S\) and \(\inf S\).</em></p>
+      <div class="ans">
+        <p>\(\sup S=1\)，\(\inf S=0\)。</p>
+      </div>
+    </li>
+
+    <li>
+      <p><em>Does \(S\) have a maximum? a minimum? Justify each answer.</em></p>
+      <div class="ans">
+        <p><span class="toshow">有最小元</span>（<span class="en">minimum</span>）\(\min S=0\)，在 \(n=1\) 取到（<span class="en">attained</span>）：\(0=x_{1}\in S\)，且对所有 \(n\) 有 \(0\le x_{n}\)。</p>
+        <p><span class="toshow">没有最大元</span>（<span class="en">no maximum</span>）：对每个 \(n\) 有 \(x_{n}=1-\tfrac1n\lt1\)；并且任给 \(x_{n}\in S\)，元素 \(x_{n+1}\) 严格更大，所以没有哪个元素不小于其余所有元素。（等价地：\(\sup S=1\notin S\)，上确界取不到。）</p>
+      </div>
+    </li>
+
+    <li>
+      <p><em>Prove, directly from the definition of supremum, that \(\sup S\) equals the value you gave in part (a).</em></p>
+      <div class="ans">
+        <p>证明 \(\sup S=1\)：逐条核对定义的两条性质（<span class="en">the two defining properties</span>）。</p>
+        <ul class="tight">
+          <li><em>1 是上界</em>（<span class="en">upper bound</span>）。对每个 \(n\in\mathbb{N}\)，\(\tfrac1n\gt0\)，所以 \(x_{n}=1-\tfrac1n\lt1\)。即所有 \(x\in S\) 满足 \(x\le1\)。</li>
+          <li><em>1 是最小上界</em>（<span class="en">least upper bound</span>）。设 \(u\lt1\)，我们证明 \(u\) 不是上界。因为 \(1-u\gt0\)，由阿基米德性质（<span class="en">Archimedean property</span>）存在 \(n\in\mathbb{N}\) 使 \(n\gt\frac{1}{1-u}\)，即 \(\frac1n\lt1-u\)，即 \(x_{n}=1-\frac1n\gt u\)。\(S\) 中有元素超过 \(u\)，所以 \(u\) 不是上界。</li>
+        </ul>
+        <p>比 1 小的数都不是上界，而 1 是上界，所以 \(\sup S=1\)。\(\ \blacksquare\)</p>
+      </div>
+    </li>
+  </ol>
+
+  <p><span class="runin">老师的写法要点.</span></p>
+  <ol class="roman">
+    <li>先把集合写成数列 \(x_{n}\)，列出前几项，说清单调和趋近哪里。(a) 的答案就是从这一句读出来的。</li>
+    <li>(b) 用“取到”（<span class="en">attained</span>）说话：min 在 \(n=1\) 取到；max 不存在有两种说法，“每个元素都有更大的”或“\(\sup S\notin S\)”（§0 规则 8）。</li>
+    <li>(c) 的第二条“设 \(u\lt1\)，证明 \(u\) 不是上界”，就是讲义 Definition 3 第 (ii) 条的逆否（§0 规则 7）。老师没点名“逆否”，直接这样写。</li>
+    <li>阿基米德性质要点名，它是“能找到这个 \(n\)”的依据。</li>
+    <li>结尾一句把两条合起来：没有比 1 小的上界，而 1 是上界。</li>
+    <li>\(\inf S=0\) 老师没有单独证：最小元存在时它就是下确界，因为任何下界 \(\ell\) 都满足 \(\ell\le0\)（\(0\in S\)）。</li>
+  </ol>
+
+  <p><span class="runin">同类题.</span> 换一个集合，四步不变：写成 \(x_{n}\) 列前几项 → 读出 sup、inf → 看取不取得到 → 用两条性质证。证 \(\inf S=m\) 也是两条：\(m\) 是下界；设 \(u\gt m\)，找 \(x\in S\) 使 \(x\lt u\)。例：\(\inf\{\tfrac1n\}=0\)，设 \(u\gt0\)，取 \(n\gt\frac1u\)，则 \(\frac1n\lt u\)。</p>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>集合</th><th>前几项</th><th>sup 与 max</th><th>inf 与 min</th></tr></thead>
+      <tbody>
+        <tr><td>\(\{\tfrac1n\}\)</td><td>\(1,\ \tfrac12,\ \tfrac13,\ \dots\)</td><td>sup = max = 1（\(n=1\)）</td><td>inf = 0，无 min</td></tr>
+        <tr><td>\(\{\tfrac{n}{n+1}\}\)</td><td>\(\tfrac12,\ \tfrac23,\ \tfrac34,\ \dots\)</td><td>sup = 1，无 max</td><td>inf = min = \(\tfrac12\)（\(n=1\)）</td></tr>
+        <tr><td>\(\{\tfrac{(-1)^{n}}{n}\}\)</td><td>\(-1,\ \tfrac12,\ -\tfrac13,\ \tfrac14,\ \dots\)</td><td>sup = max = \(\tfrac12\)（\(n=2\)）</td><td>inf = min = \(-1\)（\(n=1\)）</td></tr>
+        <tr><td>\(\{1+\tfrac{(-1)^{n}}{n}\}\)</td><td>\(0,\ \tfrac32,\ \tfrac23,\ \tfrac54,\ \dots\)</td><td>sup = max = \(\tfrac32\)（\(n=2\)）</td><td>inf = min = 0（\(n=1\)）</td></tr>
+        <tr><td>\(\{x\in\mathbb{R}:x^{2}\lt2\}\)</td><td>—</td><td>sup = \(\sqrt2\)，无 max</td><td>inf = \(-\sqrt2\)，无 min</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>两个容易错的地方。一是 sup 不一定是极限：\(\{1+\tfrac{(-1)^{n}}{n}\}\) 趋近 1，可 sup 和 inf 都在前两项取到。二是端点在不在集合里，只影响 max、min，不影响 sup、inf：\(x^{2}\lt2\) 与讲义的 \(x^{2}\le2\) 上确界相同，但前者没有 max。</p>
+
+  <p><span class="runin">对照.</span> 往年作业没有同类题。模板是讲义 Example 3、4（教材 Example 1.26、1.34），证明的两条性质就是 §0 规则 7。</p>
+</section>
+
+<p class="parthead">Part B. Fields and vector spaces</p>
+
+<!-- ===================== Problem 5 ===================== -->
+<section class="problem" id="p5">
+  <h2 class="prob"><span class="lbl">Problem 5 (\(\mathbb{F}=\{a+b\sqrt2:a,b\in\mathbb{Q}\}\) is a field).</span> Let \(\mathbb{F}=\big\{\,a+b\sqrt2:\ a,b\in\mathbb{Q}\,\big\}\) with the usual addition and multiplication of real numbers. Prove that \(\mathbb{F}\) is a field. (Since \(\mathbb{F}\subset\mathbb{R}\) and \(\mathbb{R}\) is a field, the commutative, associative, and distributive laws hold automatically; focus on showing that \(\mathbb{F}\) is closed under the two operations and contains the additive and multiplicative identities and inverses.)</h2>
+
+  <div class="ans">
+    <p class="anslbl">答案 · 按官方解答的写法</p>
+    <p>因为 \(\mathbb{F}\subset\mathbb{R}\) 且 \(\mathbb{R}\) 是域，加法与乘法的交换律、结合律以及分配律对 \(\mathbb{F}\) 的元素自动成立；只需验证封闭、单位元与逆元（<span class="en">closure, identities, and inverses</span>）。</p>
+    <ul class="tight">
+      <li><em>单位元</em>（<span class="en">identities</span>）。\(0=0+0\sqrt2\in\mathbb{F}\)，\(1=1+0\sqrt2\in\mathbb{F}\)。</li>
+      <li><em>加法封闭与加法逆元</em>（<span class="en">closure under addition and additive inverses</span>）。\((a+b\sqrt2)+(c+d\sqrt2)\) \(=(a+c)+(b+d)\sqrt2\in\mathbb{F}\)，因为 \(a+c,\ b+d\in\mathbb{Q}\)；并且 \(-(a+b\sqrt2)=(-a)+(-b)\sqrt2\in\mathbb{F}\)。</li>
+      <li><em>乘法封闭</em>（<span class="en">closure under multiplication</span>）。\((a+b\sqrt2)(c+d\sqrt2)\) \(=(ac+2bd)+(ad+bc)\sqrt2\in\mathbb{F}\)，因为 \(ac+2bd,\ ad+bc\in\mathbb{Q}\)。</li>
+      <li><em>乘法逆元</em>（<span class="en">multiplicative inverses</span>）。设 \(a+b\sqrt2\ne0\)。先证 \(a^{2}-2b^{2}\ne0\)：若 \(a^{2}-2b^{2}=0\)（\(a,b\in\mathbb{Q}\)），则 \(b=0\) 会迫使 \(a=0\)（已排除），而 \(b\ne0\) 会给出 \(\sqrt2=|a/b|\in\mathbb{Q}\)，与 \(\sqrt2\) 无理矛盾。所以可以除：
+        \[ \begin{aligned}
+           \frac{1}{a+b\sqrt2}&amp;=\frac{a-b\sqrt2}{(a+b\sqrt2)(a-b\sqrt2)}\\
+           &amp;=\frac{a}{a^{2}-2b^{2}}+\frac{-b}{a^{2}-2b^{2}}\sqrt2\in\mathbb{F},
+           \end{aligned} \]
+        因为两个系数都是有理数。这就是乘法逆元，而且它在 \(\mathbb{F}\) 里。</li>
+    </ul>
+    <p>所有域公理都成立，所以 \(\mathbb{F}\) 是域。\(\ \blacksquare\)</p>
+  </div>
+
+  <p><span class="runin">老师的写法要点.</span></p>
+  <ol class="roman">
+    <li>第一句把自动成立的交换、结合、分配一次打发掉，然后说只剩封闭、单位元、逆元（§0 规则 10）。</li>
+    <li>分组跟着运算走：单位元一条；加法封闭和加法逆元合成一条（都只涉及加法）；乘法封闭一条；乘法逆元一条。</li>
+    <li>每个“\(\in\mathbb{F}\)”都跟一个 because：系数在 \(\mathbb{Q}\) 里（习惯 2）。</li>
+    <li>乘法逆元先证分母 \(a^{2}-2b^{2}\ne0\)，再有理化（§0 规则 11）。分母非零是全题唯一用到 \(\sqrt2\) 无理的地方，也是最容易漏的一步。</li>
+  </ol>
+
+  <p><span class="runin">自查.</span> 取 \(a+b\sqrt2=1+\sqrt2\)：\(a^{2}-2b^{2}=1-2=-1\)，公式给出逆元 \(-1+\sqrt2\)，而 \((1+\sqrt2)(-1+\sqrt2)=2-1=1\)。\(\checkmark\)</p>
+
+  <p><span class="runin">同类题.</span> 同一张清单（单位元、加法封闭与逆元、乘法封闭、乘法逆元）套到别的集合上。判“不是”时，照 §0 规则 9 找一条失败的公理，给一个具体元素：</p>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>集合</th><th>是域？</th><th>关键一步</th></tr></thead>
+      <tbody>
+        <tr><td>\(\{a+b\sqrt3:a,b\in\mathbb{Q}\}\)</td><td>是</td><td>同一套证明：乘积为 \((ac+3bd)+(ad+bc)\sqrt3\)，逆元分母 \(a^{2}-3b^{2}\ne0\) 用 \(\sqrt3\) 无理</td></tr>
+        <tr><td>\(\{a+bi:a,b\in\mathbb{Q}\}\)</td><td>是</td><td>逆元 \(\frac{a-bi}{a^{2}+b^{2}}\)，分母非零是自动的（平方和）</td></tr>
+        <tr><td>\(\{a+b\sqrt2:a,b\in\mathbb{Z}\}\)</td><td>否</td><td>乘法逆元失败：2 没有逆。若 \(2(a+b\sqrt2)=1\)，\(b\ne0\) 会让 \(\sqrt2\) 成为有理数，\(b=0\) 则 \(2a=1\) 没有整数解</td></tr>
+        <tr><td>\(\{a\sqrt2:a\in\mathbb{Q}\}\)</td><td>否</td><td>单位元失败：\(1=a\sqrt2\) 会让 \(\sqrt2=1/a\in\mathbb{Q}\)</td></tr>
+        <tr><td>\(\mathbb{Q}\cup\{\sqrt2\}\)</td><td>否</td><td>加法封闭失败：\(1+\sqrt2\) 既不是有理数，也不等于 \(\sqrt2\)</td></tr>
+        <tr><td>无理数、\(\mathbb{Z}\)、\(\mathbb{N}\)、\(2\times2\) 矩阵</td><td>否</td><td>见 §0 规则 9 的表</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p><span class="runin">对照.</span> 往年作业没有同类题。模板是讲义 Example 5 里的 \(\mathbb{Q}\)（§0 规则 10），本题只多了“分母非零”这一步。</p>
+</section>
+
+<!-- ===================== Problem 6 ===================== -->
+<section class="problem" id="p6">
+  <h2 class="prob"><span class="lbl">Problem 6 (checking the vector-space axioms).</span> For each of the following, decide whether \((V,\mathbb{R})\) is a vector space under the given operations. If it is, verify the axioms that involve the operations (closure under each operation, existence of a zero vector and additive inverses, and the unit-scalar axiom \(1\cdot x=x\)). If it is not, exhibit one axiom that fails.</h2>
+
+  <ol class="parts">
+    <li>
+      <p><em>\(V=\mathbb{R}^{2}\) with \((x_{1},x_{2})+(y_{1},y_{2})={}\) \((x_{1}+y_{1},\ x_{2}+y_{2})\) and \(\alpha\cdot(x_{1},x_{2})=(\alpha x_{1},\ 0)\).</em></p>
+      <div class="ans">
+        <p class="anslbl">答案 · 按官方解答的写法</p>
+        <p><span class="toshow">不是向量空间</span>（<span class="en">not a vector space</span>）：单位数乘公理（<span class="en">unit-scalar axiom</span>）不成立。取 \(\alpha=1\)，</p>
+
+        \[ 1\cdot(x_{1},x_{2})=(x_{1},0), \]
+
+        <p>当 \(x_{2}\ne0\) 时它不等于 \((x_{1},x_{2})\)（例如 \(1\cdot(0,1)=(0,0)\ne(0,1)\)）。一条公理不成立就足以排除 \(V\)（<span class="en">a single violated axiom is enough</span>）。\(\ \blacksquare\)</p>
+      </div>
+
+      <p><span class="runin">注意：官方解答这里有一句括号不对.</span> 官方在 (a) 末尾加了一句括号，说两条数乘分配律也不成立，只是用不着。逐条代入可以验证，两条分配律都成立：</p>
+
+      \[ (\alpha+\beta)\cdot x=\big((\alpha+\beta)x_{1},\,0\big)=(\alpha x_{1},0)+(\beta x_{1},0)=\alpha\cdot x+\beta\cdot x, \]
+      \[ \alpha\cdot(x+y)=\big(\alpha(x_{1}+y_{1}),\,0\big)=(\alpha x_{1},0)+(\alpha y_{1},0)=\alpha\cdot x+\alpha\cdot y. \]
+
+      <p>数乘结合律 \((\alpha\beta)\cdot x=\alpha\cdot(\beta\cdot x)\) 也成立，加法那五条就是 \(\mathbb{R}^{2}\) 的通常加法。十条里只有单位数乘失败，所以作业里只写这一条，别照抄那句括号。这个例子也恰好说明，第 10 条不能由另外九条推出。</p>
+    </li>
+
+    <li>
+      <p><em>\(V=\mathbb{R}_{+}=\{\,x\in\mathbb{R}:x\gt0\,\}\) with \(x\oplus y=xy\) and \(\alpha\odot x=x^{\alpha}\).</em></p>
+      <div class="ans">
+        <p class="anslbl">答案 · 按官方解答的写法</p>
+        <p><span class="toshow">是向量空间</span>（over \(\mathbb{R}\)）。逐条验证公理：</p>
+        <ul class="tight">
+          <li><em>\(\oplus\) 封闭</em>（<span class="en">closure under ⊕</span>）：若 \(x,y\gt0\)，则 \(xy\gt0\)，所以 \(x\oplus y\in V\)。\(\oplus\) 的交换律和结合律就是实数乘法的交换律和结合律。</li>
+          <li><em>零向量</em>（<span class="en">zero vector</span>）：\(1\in V\) 充当零向量，因为对一切 \(x\) 有 \(1\oplus x=1\cdot x=x\)。</li>
+          <li><em>加法逆元</em>（<span class="en">additive inverse</span>）：对 \(x\in V\)，\(1/x\in V\)，且 \(x\oplus(1/x)=x\cdot(1/x)=1\)，正是零向量。</li>
+          <li><em>\(\odot\) 封闭</em>（<span class="en">closure under ⊙</span>）：若 \(x\gt0\)、\(\alpha\in\mathbb{R}\)，则 \(x^{\alpha}\gt0\)，所以 \(\alpha\odot x\in V\)。</li>
+          <li><em>数乘相容</em>（<span class="en">compatibility of scalar multiplication</span>）：\((\alpha\beta)\odot x=x^{\alpha\beta}\) \(=(x^{\beta})^{\alpha}=\alpha\odot(\beta\odot x)\)。</li>
+          <li><em>对向量加法的分配律</em>（<span class="en">distributivity over vector addition</span>）：\(\alpha\odot(x\oplus y)=(xy)^{\alpha}\) \(=x^{\alpha}y^{\alpha}=(\alpha\odot x)\oplus(\alpha\odot y)\)。</li>
+          <li><em>对数量加法的分配律</em>（<span class="en">distributivity over scalar addition</span>）：\((\alpha+\beta)\odot x=x^{\alpha+\beta}\) \(=x^{\alpha}x^{\beta}=(\alpha\odot x)\oplus(\beta\odot x)\)。</li>
+          <li><em>单位数乘</em>（<span class="en">unit scalar</span>）：\(1\odot x=x^{1}=x\)。</li>
+        </ul>
+        <p>十条公理全部成立（<span class="en">all ten axioms hold</span>），所以 \((\mathbb{R}_{+},\mathbb{R})\) 在这两种运算下是向量空间。\(\ \blacksquare\)</p>
+      </div>
+
+      <p><span class="runin">老师最后的 Remark.</span> 为什么十条都成立？因为 \((\mathbb{R}_{+},\oplus,\odot)\) 就是 \((\mathbb{R},+,\cdot)\) 经 \(t\mapsto e^{t}\) 搬过去的样子（老师用的词是同构，<span class="en">isomorphism</span>）。由 \(e^{s+t}=e^{s}e^{t}\) 与 \(e^{\alpha t}=(e^{t})^{\alpha}\)，\(\mathbb{R}\) 里的每条公理翻译过去，正好是 \(\mathbb{R}_{+}\) 里对应的那条：</p>
+
+      <div class="tw">
+        <table>
+          <thead><tr><th>角色</th><th>\((\mathbb{R},+,\cdot)\)</th><th>\((\mathbb{R}_{+},\oplus,\odot)\)，\(x=e^{t}\)</th></tr></thead>
+          <tbody>
+            <tr><td>向量加法</td><td>\(s+t\)</td><td>\(x\oplus y=xy\)</td></tr>
+            <tr><td>数乘</td><td>\(\alpha t\)</td><td>\(\alpha\odot x=x^{\alpha}\)</td></tr>
+            <tr><td>零向量</td><td>\(0\)</td><td>\(e^{0}=1\)</td></tr>
+            <tr><td>加法逆元</td><td>\(-t\)</td><td>\(e^{-t}=1/x\)</td></tr>
+            <tr><td>单位数乘</td><td>\(1\cdot t=t\)</td><td>\(x^{1}=x\)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>用法：碰到一对新运算，先想有没有这样一个“翻译”。有，就是向量空间，而且零向量就是 \(0\) 的像、逆元就是 \(-t\) 的像，比解方程还快。答案仍按十条逐条写，老师就是这么做的。</p>
+    </li>
+  </ol>
+
+  <p><span class="runin">老师的写法要点.</span></p>
+  <ol class="roman">
+    <li>判“不是”：点名失败的公理 → 一般计算 → 具体数值例子 → 一条就够（习惯 4）。</li>
+    <li>判“是”：十条全写，每条一行，名字写出来；交换和结合一句带过。题面只点名五条，老师照样写全（习惯 3）。</li>
+    <li>零向量不一定是 0：先按定义解 \(z\oplus x=x\)（§0 规则 12）。</li>
+    <li>找反例先查可疑处（§0 规则 9 后半）：运算丢信息查单位数乘；集合缺点查封闭和零向量；数乘对 \(\alpha\) 不是一次的，查分配律。</li>
+  </ol>
+
+  <p><span class="runin">同类题.</span> 下面每一行都逐条验算过。“不是”只写一条失败的公理加一个具体的数；“是”就十条全写：</p>
+
+  <div class="tw">
+    <table class="wrap">
+      <thead><tr><th>\(V\) 与运算</th><th>向量空间？</th><th>失败的公理与反例（或理由）</th></tr></thead>
+      <tbody>
+        <tr><td>\(\mathbb{R}^{2}\)，通常加法，\(\alpha\cdot x=\alpha^{2}x\)</td><td>否</td><td>对数量加法的分配律：\(\alpha=\beta=1\) 时 \((1+1)\cdot x=4x\)，而 \(1\cdot x+1\cdot x=2x\)</td></tr>
+        <tr><td>\(\mathbb{R}^{2}\)，通常加法，\(\alpha\cdot x=(0,0)\)</td><td>否</td><td>单位数乘：\(1\cdot(1,0)=(0,0)\ne(1,0)\)</td></tr>
+        <tr><td>\(\mathbb{R}\)，\(x\oplus y=x-y\)，通常数乘</td><td>否</td><td>交换律：\(1\oplus0=1\)，\(0\oplus1=-1\)</td></tr>
+        <tr><td>\(\mathbb{R}_{+}\)，通常加法与数乘</td><td>否</td><td>数乘封闭：\((-1)\cdot1=-1\notin\mathbb{R}_{+}\)（也没有零向量：\(0\notin\mathbb{R}_{+}\)）</td></tr>
+        <tr><td>\(\mathbb{R}_{+}\)，\(x\oplus y=xy\)，\(\alpha\odot x=\alpha x\)</td><td>否</td><td>数乘封闭：\((-1)\odot2=-2\notin\mathbb{R}_{+}\)</td></tr>
+        <tr><td>\(\mathbb{R}\)，\(x\oplus y=x+y-3\)，通常数乘</td><td>否</td><td>两条分配律都坏，例如 \((1+1)x=2x\)，而 \(x\oplus x=2x-3\)</td></tr>
+        <tr><td>\(\mathbb{R}\)，\(x\oplus y=x+y-3\)，\(\alpha\odot x=\alpha(x-3)+3\)</td><td>是</td><td>它是 \(\mathbb{R}\) 经 \(t\mapsto t+3\) 搬过去的：零向量 \(3\)，逆元 \(6-x\)（§0 规则 12 的例子）</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p><span class="runin">对照往年题.</span> 往年没有“判断整个空间”的题。最近的是往年 hw03 第 1 题（Nagy 4.1.1，判断 \(\mathbb{R}^{n}\) 的子集是不是子空间（<span class="en">subspace</span>），属 Week 3），题面要求 “Be very brief when giving reasons”，官方解答每个“不是”都只点名失败的性质，再给一个具体向量，例如 \((1,0,\dots,0)\in S\) 但 \(-(1,0,\dots,0)\notin S\)。和今年老师 (a) 的写法是同一个路数。</p>
+</section>
+
+<hr class="thin">
+
+<!-- ===================== 附录 ===================== -->
+<section class="problem" id="appendix">
+  <h3 class="named">附录 · 对照表与官方解答勘误</h3>
+
+  <p>复习时倒着用：先认出题目属于哪一类，再翻对应的出处。</p>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>本次</th><th>老师的标题</th><th>讲义 / 教材出处</th><th>同类范例</th></tr></thead>
+      <tbody>
+        <tr><td>P1</td><td>contradiction</td><td>讲义 §1.1–1.2；教材 §1.3.5</td><td>讲义 Theorem 1（\(\sqrt2\)）＝教材 Example 1.13；往年 hw02 第 3 题（\(\sqrt7\)）</td></tr>
+        <tr><td>P2</td><td>truth table</td><td>讲义 §1.3；教材 §1.4</td><td>往年 hw02 第 1 题（德摩根律）；Rec #2 §1</td></tr>
+        <tr><td>P3</td><td>negation</td><td>讲义 §1.4；教材 §1.5</td><td>讲义 Example 2＝教材 Example 1.17；往年 hw02 第 2 题；Rec #2 §2</td></tr>
+        <tr><td>P4</td><td>supremum and infimum</td><td>讲义 §1.5；教材 §1.6</td><td>讲义 Example 3、4＝教材 Example 1.26、1.34</td></tr>
+        <tr><td>P5</td><td>\(\mathbb{F}\) … is a field</td><td>讲义 §2.1；教材 Definition 2.1</td><td>讲义 Example 5＝教材 §2.1 的域 / 非域表</td></tr>
+        <tr><td>P6</td><td>checking the vector-space axioms</td><td>讲义 §2.2；教材 Definition 2.2</td><td>教材 Example 2.3、Non-Example 2.4；往年 hw03 第 1 题（子空间版）</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p><span class="runin">今年官方与往年官方的写法差别.</span> 两份都是官方解答，但口味不同。今年的作业按今年的来：</p>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>方面</th><th>往年（2022，HW02_Sol 等）</th><th>今年（HW3_solutions）</th></tr></thead>
+      <tbody>
+        <tr><td>开头</td><td>Claim / Proof / To show / Method 等下划线标签</td><td>标题括号里点名方法，正文直接开写</td></tr>
+        <tr><td>正文</td><td>一行一步，连接词少</td><td>散文，每步带 because / since</td></tr>
+        <tr><td>多条件验证</td><td>(i)(ii) 编号</td><td>带斜体小标题的 bullet，结尾说“都成立”</td></tr>
+        <tr><td>否定题</td><td>列出几种等价说法（Each of these is correct）</td><td>一个符号式 + 文字版 + 翻译回概念</td></tr>
+        <tr><td>真值</td><td>1 / 0</td><td>T / F</td></tr>
+        <tr><td>结束符</td><td>\(\square\)</td><td>\(\blacksquare\)</td></tr>
+        <tr><td>推广</td><td>很少</td><td>常用 Remark 推广一步</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p><span class="runin">官方解答勘误.</span> P6(a) 末尾的括号说两条数乘分配律也不成立，这不对：代入可验证两条分配律和数乘结合律都成立，十条里只有单位数乘失败（验算见 P6(a) 的“注意”）。作业里不要照抄这句括号。</p>
+
+  <p><span class="runin">与往年作业的对应.</span> 今年 HW2 和 HW3 合起来约等于往年 hw02：HW2 用了第 4–6 题（逆否、归纳），HW3 用了第 1–3 题（真值表、否定、反证），题序倒了过来。HW3 第 4–6 题（\(\sup/\inf\)、域、向量空间公理）往年没有布置过，往年 hw03 直接从子空间开始。</p>
+
+  <p><span class="runin">下一次的范围.</span> Week 3 讲义：子空间、线性无关、基与表示，教材 §2.2–2.5。对应往年 hw03（子空间判定、\(\operatorname{span}\)、线性无关、直和）与 Recitation #3（线性无关）。本次 P6(a) 那种“点名一条失败的公理，再给一个具体向量”的写法，到时就是子空间判定的标准写法。</p>
+</section>
+
+<div class="colophon">
+  <p>依据：HW/HW3.pdf、HW/HW3_solutions.pdf（今年官方解答）、Lectures/week02_notes_student.pdf、Recitation/Recitation_#2_solution.pdf、ROB501_Textbook §1.3.5–1.6 与 §2.1。</p>
+  <p>往年题：Past-Homework-501/hw02.pdf 与 HW02_Sol.pdf、hw03.pdf 与 HW03_Sol.pdf（2022 年秋）。版式沿用 HW01_Sol.pdf / HW02_Sol.pdf 的 LaTeX 风格，答案写法按今年官方解答。</p>
+</div>
+
+</div><!-- /sheet -->
+
+<script>
+(function () {
+  var ids = ['method','p1','p2','p3','p4','p5','p6','appendix'];
+  var links = Array.prototype.slice.call(document.querySelectorAll('.rail a, .topnav a'));
+  if (!links.length || !('IntersectionObserver' in window)) return;
+  function setActive(id){ links.forEach(function(a){ a.classList.toggle('is-active', a.getAttribute('href') === '#' + id); }); }
+  var visible = Object.create(null);
+  var obs = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) { if (e.isIntersecting) { visible[e.target.id] = true; } else { delete visible[e.target.id]; } });
+    for (var i = 0; i < ids.length; i++) { if (visible[ids[i]]) { setActive(ids[i]); return; } }
+  }, { rootMargin: '-12% 0px -72% 0px', threshold: 0 });
+  ids.forEach(function (id) { var el = document.getElementById(id); if (el) { obs.observe(el); } });
+})();
+</script>
+</body>
+</html>
